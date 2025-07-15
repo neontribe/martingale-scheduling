@@ -9,3 +9,9 @@ A simple FastAPI app that can be deployed on DigitalOcean App Platform and devel
 ```
 
 Visit: [http://localhost:8080/run-task](http://localhost:8080/run-task)
+
+## Run Tests
+
+```bash
+pytest
+```
