@@ -1,0 +1,13 @@
+# Dependencies
+fastapi
+uvicorn[standard]
+pydantic
+sqlalchemy
+aiosqlite
+
+# Linting & formatting tools
+black
+isort
+flake8
+mypy
+pre-commit
