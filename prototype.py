@@ -93,6 +93,7 @@ def gen_matches(candidates, cand_copy, spaces, weights):
                 if c.subject in s.subjects: #do the courses match?
 
                     cost[(c, s)] = weights[(c.address,s.location)] #currently the weights are randomised
+                    cost[(cand_copy[idx],s)] = weights[(cand_copy[idx].address, s.location)]
 
                     if (str(c.specialisms["MMath"]) not in str(s.specialisms["MMath"])) and (str(c.specialisms["MMath"]) != "nan"):
                         #if specialisms don't match, create constraint
@@ -191,20 +192,16 @@ for c in cand_copy:
 gen_constraints(ME_all_cand, ME_dates)
 cost = gen_matches(candidates, cand_copy, spaces, weights)
 
+all_cand = candidates + cand_copy
 
 # Each candidate assigned to exactly one space
-for c in candidates:
-    model.AddExactlyOne(x[c, s] for s in spaces)
-for c in cand_copy:
+for c in all_cand:
     model.AddExactlyOne(x[c, s] for s in spaces)
 
 # Each space assigned to at most one candidate
 for s in spaces:
-    model.AddAtMostOne(x[c, s] for c in candidates)
-for s in spaces:
-    model.AddAtMostOne(x[c, s] for c in cand_copy)
+    model.AddAtMostOne(x[c, s] for c in all_cand)
 
-all_cand = candidates + cand_copy
 
 # Objective: minimize total cost
 model.Minimize(
