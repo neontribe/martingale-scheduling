@@ -9,6 +9,10 @@ app = FastAPI()
 # Create the database tables
 Base.metadata.create_all(bind=engine)
 
+@app.get("/")
+def get_info():
+    return "hello world"
+
 @app.post("/run-task", response_model=TaskResponse)
 def run_task(task: TaskCreate):
     db = SessionLocal()
