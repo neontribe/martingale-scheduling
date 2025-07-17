@@ -1,9 +1,10 @@
 from ortools.sat.python import cp_model
 import pandas as pd
 import random
-from datetime import datetime
+from datetime import datetime,timedelta
 from utilities import extract_data, parse_schedule, Space, Subj_Candidate
 import copy
+from icalendar import Calendar, Event
 
 def gen_spaces(df):
     '''One space refers to one interview slot at a particular time/date/location and with an interviewer.
@@ -93,8 +94,6 @@ def gen_matches(candidates, cand_copy, spaces, weights):
             if s.datestr in c.avail: #do the availabilities match?
                 if c.subject in s.subjects: #do the courses match?
 
-                    #print(f"{c.name} may be matched with {s.interviewer}, on {s.date} {s.time} for {c.subject}")
-
                     cost[(c, s)] = weights[(c.address,s.location)] #currently the weights are randomised
                     cost[(cand_copy[idx],s)] = weights[(cand_copy[idx].address, s.location)]
 
@@ -102,14 +101,12 @@ def gen_matches(candidates, cand_copy, spaces, weights):
                         #if specialisms don't match, create constraint
                         
                         #if c assigned to s, then c duplicate must be assigned to something with the same specialism 
-                        special_con = model.NewBoolVar("special_con") #create bool var which describes allowable combinations
-                        model.Add(special_con == 1)
 
                         #copy of c can only be matched to spaces with matching specialism in masters
                         copy_special = str(cand_copy[idx].specialisms["MMath"])
 
                         #if constraint applies, can be connected to any s with right specialism
-                        model.AddBoolOr([x[cand_copy[idx],s] for s in spaces if copy_special in str(s.specialisms["MMath"])]).OnlyEnforceIf(special_con) #positive constraint
+                        model.AddBoolOr([x[cand_copy[idx],s] for s in spaces if copy_special in str(s.specialisms["MMath"])]).OnlyEnforceIf(x[c,s]) #positive constraint
                         print(f"Specialism is {([copy_special])}")
                         print(f"Allowed spaces {([str(s.specialisms['MMath']) for s in spaces if copy_special in str(s.specialisms['MMath'])])}")
                         #only if constraint doesn't apply, can it be connected to any s without right specialism
@@ -118,14 +115,12 @@ def gen_matches(candidates, cand_copy, spaces, weights):
                     if (str(c.specialisms["MPhd"]) not in str(s.specialisms["MPhd"])) and (str(c.specialisms["MPhd"]) != "nan"):
                         #if specialisms don't match, create constraint
                         #if c assigned to s, then c duplicate must be assigned to something with the same specialism 
-                        special_con = model.NewBoolVar("special_con") #create bool var which describes allowable combinations
-                        model.Add(special_con == 1)
 
                         #copy of c can only be matched to spaces with matching specialism in masters
                         copy_special = str(cand_copy[idx].specialisms["MPhd"])
 
                         #if constraint applies, can be connected to any s with right specialism
-                        model.AddBoolOr([x[cand_copy[idx],s] for s in spaces if copy_special in str(s.specialisms["MPhd"]) ]).OnlyEnforceIf(special_con) #positive constraint
+                        model.AddBoolOr([x[cand_copy[idx],s] for s in spaces if copy_special in str(s.specialisms["MPhd"]) ]).OnlyEnforceIf(x[c,s]) #positive constraint
                         print(f"Specialism is {([copy_special])}")
                         print(f"Allowed spaces {([str(s.specialisms['MPhd']) for s in spaces if copy_special in str(s.specialisms['MPhd'])])}")
                         #only if constraint doesn't apply can it be connected to an s without right specialism
@@ -207,19 +202,6 @@ for s in spaces:
     model.AddAtMostOne(x[c, s] for c in all_cand)
 
 
-# for s1 in spaces:
-#     for s2 in spaces:
-#         if s1 != s2 and s1.date == s2.date and s1.time == s2.time and s1.location == s2.location and s1.interviewer != s2.interviewer:
-#             print(f"Valid slot pair: {s1.interviewer}, {s2.interviewer} on {s1.date} {s1.time} at {s1.location}")
-
-
-
-for c in all_cand:
-    for s in spaces:
-        print(f"Cost for {c.name} to {s.interviewer} on {s.date} {s.time}: {cost[(c, s)]}")
-
-
-
 
 # Objective: minimize total cost
 model.Minimize(
@@ -232,14 +214,50 @@ status = solver.Solve(model)
 
 # Output
 
-if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]: 
-    for c in range(0,len(candidates)): #needs to go through candidate copies too
+def create_calendar(candidates, cand_copy, spaces, solver, x, output_file='interviews.ics'):
+    cal = Calendar()
+
+    all_cand = candidates + cand_copy
+    current_year = datetime.now().year
+
+    for c in all_cand:
         for s in spaces:
-            if solver.Value(x[candidates[c], s]):
-                print(f"Interviewer 1 {s.interviewer} on {s.date, s.time} assigned to  {candidates[c].name} for subject {candidates[c].subject}")
-            if solver.Value(x[cand_copy[c],s]):
-                print(f"Interviewer 2 {s.interviewer} on {s.date, s.time} assigned to  {cand_copy[c].name} for subject {cand_copy[c].subject}")
-    print("Total Cost =", solver.ObjectiveValue())
+            if solver.Value(x[c, s]):
+                # Determine event start time
+                updated_date = s.date.replace(year=current_year)
+                if s.time == 'morning':
+                    start_time = datetime.combine(updated_date, datetime.strptime("09:00", "%H:%M").time())
+                elif s.time == 'afternoon':
+                    start_time = datetime.combine(updated_date, datetime.strptime("13:00", "%H:%M").time())
+                else:
+                    continue  # unknown time slot
+
+                # Create event
+                event = Event()
+                event.add('summary', f'Interview: {c.name} with {s.interviewer}')
+                event.add('dtstart', start_time)
+                event.add('dtend', start_time + timedelta(hours=1))  # Assume 1 hour interview
+                event.add('location', s.location)
+                event.add('description', f'Subject: {c.subject}')
+
+                cal.add_component(event)
+
+    # Write to .ics file
+    with open(output_file, 'wb') as f:
+        f.write(cal.to_ical())
+    print(f"Calendar written to {output_file}")
+
+
+if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]: 
+    # for c in range(0,len(candidates)): #needs to go through candidate copies too
+    #     for s in spaces:
+    #         if solver.Value(x[candidates[c], s]):
+    #             print(f"Interviewer 1 {s.interviewer} on {s.date, s.time} assigned to  {candidates[c].name} for subject {candidates[c].subject}")
+    #         if solver.Value(x[cand_copy[c],s]):
+    #             print(f"Interviewer 2 {s.interviewer} on {s.date, s.time} assigned to  {cand_copy[c].name} for subject {cand_copy[c].subject}")
+    # print("Total Cost =", solver.ObjectiveValue())
+    create_calendar(candidates, cand_copy, spaces, solver, x)
 else:
     print("No feasible solution found.")
+
 
