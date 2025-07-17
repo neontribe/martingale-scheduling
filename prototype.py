@@ -80,48 +80,56 @@ def gen_matches(candidates, cand_copy, spaces, weights):
             #must enforce that cand and cand_copy have to be matched to a space with the same date, time and location
             #but different interviewer
             copy_con = model.NewBoolVar("copy_con")
+            model.Add(copy_con == 1) #ensures copy_con is true
             disallowed = [t for t in spaces if not((s.location == t.location) and (s.date == t.date) and (s.time == t.time) and (s.interviewer != t.interviewer))]
 
             #if connection is disallowed, ensure x bool is false
-            model.AddBoolAnd([x[cand_copy[idx],t].Not() for t in disallowed]).OnlyEnforceIf(copy_con)
+            model.AddBoolAnd([x[cand_copy[idx],t].Not() for t in disallowed]).OnlyEnforceIf(x[c,s])
             #only allow x bool to be true for disallowed connections if the constraint is turned off
-            model.AddBoolOr([x[cand_copy[idx],t] for t in disallowed]).OnlyEnforceIf(copy_con.Not())
+            #model.AddBoolOr([x[cand_copy[idx],t] for t in disallowed]).OnlyEnforceIf(copy_con.Not())
 
             cost[(c,s)] = 1000000 #if the availabilities don't match, want this to be basically impossible
             cost[(cand_copy[idx],s)] = 1000000
             if s.datestr in c.avail: #do the availabilities match?
                 if c.subject in s.subjects: #do the courses match?
 
+                    #print(f"{c.name} may be matched with {s.interviewer}, on {s.date} {s.time} for {c.subject}")
+
                     cost[(c, s)] = weights[(c.address,s.location)] #currently the weights are randomised
                     cost[(cand_copy[idx],s)] = weights[(cand_copy[idx].address, s.location)]
 
                     if (str(c.specialisms["MMath"]) not in str(s.specialisms["MMath"])) and (str(c.specialisms["MMath"]) != "nan"):
                         #if specialisms don't match, create constraint
+                        
                         #if c assigned to s, then c duplicate must be assigned to something with the same specialism 
                         special_con = model.NewBoolVar("special_con") #create bool var which describes allowable combinations
-                        
+                        model.Add(special_con == 1)
+
                         #copy of c can only be matched to spaces with matching specialism in masters
                         copy_special = str(cand_copy[idx].specialisms["MMath"])
-                        s_special = str(s.specialisms["MMath"])
 
                         #if constraint applies, can be connected to any s with right specialism
-                        model.AddBoolOr([x[cand_copy[idx],s] for s in spaces if copy_special in s_special]).OnlyEnforceIf(special_con) #positive constraint
+                        model.AddBoolOr([x[cand_copy[idx],s] for s in spaces if copy_special in str(s.specialisms["MMath"])]).OnlyEnforceIf(special_con) #positive constraint
+                        print(f"Specialism is {([copy_special])}")
+                        print(f"Allowed spaces {([str(s.specialisms['MMath']) for s in spaces if copy_special in str(s.specialisms['MMath'])])}")
                         #only if constraint doesn't apply, can it be connected to any s without right specialism
-                        model.AddBoolAnd([x[cand_copy[idx],s].Not() for s in spaces if copy_special in s_special]).OnlyEnforceIf(special_con.Not()) #negative constraint
+                        #model.AddBoolAnd([x[cand_copy[idx],s].Not() for s in spaces if copy_special in s_special]).OnlyEnforceIf(special_con.Not()) #negative constraint
                         
                     if (str(c.specialisms["MPhd"]) not in str(s.specialisms["MPhd"])) and (str(c.specialisms["MPhd"]) != "nan"):
                         #if specialisms don't match, create constraint
                         #if c assigned to s, then c duplicate must be assigned to something with the same specialism 
                         special_con = model.NewBoolVar("special_con") #create bool var which describes allowable combinations
+                        model.Add(special_con == 1)
 
                         #copy of c can only be matched to spaces with matching specialism in masters
                         copy_special = str(cand_copy[idx].specialisms["MPhd"])
-                        s_special = str(s.specialisms["MPhd"])
 
                         #if constraint applies, can be connected to any s with right specialism
-                        model.AddBoolOr([x[cand_copy[idx],s] for s in spaces if str(cand_copy[idx].specialisms["MPhd"]) in str(s.specialisms["MPhd"])]).OnlyEnforceIf(special_con) #positive constraint
+                        model.AddBoolOr([x[cand_copy[idx],s] for s in spaces if copy_special in str(s.specialisms["MPhd"]) ]).OnlyEnforceIf(special_con) #positive constraint
+                        print(f"Specialism is {([copy_special])}")
+                        print(f"Allowed spaces {([str(s.specialisms['MPhd']) for s in spaces if copy_special in str(s.specialisms['MPhd'])])}")
                         #only if constraint doesn't apply can it be connected to an s without right specialism
-                        model.AddBoolAnd([x[cand_copy[idx],s].Not() for s in spaces if str(cand_copy[idx].specialisms["MPhd"]) in str(s.specialisms["MPhd"])]).OnlyEnforceIf(special_con.Not()) #negative constraint
+                        #model.AddBoolAnd([x[cand_copy[idx],s].Not() for s in spaces if str(cand_copy[idx].specialisms["MPhd"]) in str(s.specialisms["MPhd"])]).OnlyEnforceIf(special_con.Not()) #negative constraint
         idx += 1
     return cost
 
@@ -159,18 +167,14 @@ def gen_ME_dates(df):
             ME_dates[proper_dates[i]] = [proper_dates[i-1], proper_dates[i], proper_dates[i+1]]
     return ME_dates
 
-def gen_constraints(ME_all_cand, ME_dates):
+def gen_constraints(candidates, ME_dates):
     '''Ensures impossible assignments of interviewees being double booked 
     or assigned to different locations of consecutive days'''
-    for i in range(0, len(ME_all_cand)):
-        ME_cand = ME_all_cand[i]
-        for ele in ME_cand:
-            date_con = model.NewBoolVar("date_con")
-            for s in spaces:
-                #if constraint applies, can't match ME candidates to ME dates
-                model.AddBoolAnd([x[ele,t].Not() for t in spaces if ((t.date in ME_dates[s.date]) and (t.location != s.location)) or (t.date == s.date and t.time == s.time)]).OnlyEnforceIf(date_con)
-                #only if constraint doesn't apply, can we match ME candidates to any of the ME dates
-                model.AddBoolOr([x[ele,t] for t in spaces if ((t.date in ME_dates[s.date]) and (t.location != s.location)) or (t.date == s.date and t.time == s.time)]).OnlyEnforceIf(date_con.Not())
+    for c1 in candidates:
+        for c2 in candidates:
+            if (c1.name == c2.name) and (c1 != c2):
+                for s in spaces:
+                    model.AddBoolAnd([x[c2,t].Not() for t in spaces if ((t.date in ME_dates[s.date]) and (t.location != s.location)) or (t.date == s.date and t.time == s.time)]).OnlyEnforceIf(x[c1,s])
 
 model = cp_model.CpModel()
 candidate_df , academic_df = extract_data()
@@ -189,7 +193,7 @@ for c in cand_copy:
     for s in spaces:
         x[c, s] = model.NewBoolVar(f'x[{c}][{s}]')
 
-gen_constraints(ME_all_cand, ME_dates)
+gen_constraints(candidates, ME_dates)
 cost = gen_matches(candidates, cand_copy, spaces, weights)
 
 all_cand = candidates + cand_copy
@@ -203,6 +207,20 @@ for s in spaces:
     model.AddAtMostOne(x[c, s] for c in all_cand)
 
 
+# for s1 in spaces:
+#     for s2 in spaces:
+#         if s1 != s2 and s1.date == s2.date and s1.time == s2.time and s1.location == s2.location and s1.interviewer != s2.interviewer:
+#             print(f"Valid slot pair: {s1.interviewer}, {s2.interviewer} on {s1.date} {s1.time} at {s1.location}")
+
+
+
+for c in all_cand:
+    for s in spaces:
+        print(f"Cost for {c.name} to {s.interviewer} on {s.date} {s.time}: {cost[(c, s)]}")
+
+
+
+
 # Objective: minimize total cost
 model.Minimize(
     sum(cost[c, s] * x[c, s] for c in all_cand for s in spaces)
@@ -213,6 +231,7 @@ solver = cp_model.CpSolver()
 status = solver.Solve(model)
 
 # Output
+
 if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]: 
     for c in range(0,len(candidates)): #needs to go through candidate copies too
         for s in spaces:
