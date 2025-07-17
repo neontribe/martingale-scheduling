@@ -107,8 +107,8 @@ def gen_matches(candidates, cand_copy, spaces, weights):
 
                         #if constraint applies, can be connected to any s with right specialism
                         model.AddBoolOr([x[cand_copy[idx],s] for s in spaces if copy_special in str(s.specialisms["MMath"])]).OnlyEnforceIf(x[c,s]) #positive constraint
-                        print(f"Specialism is {([copy_special])}")
-                        print(f"Allowed spaces {([str(s.specialisms['MMath']) for s in spaces if copy_special in str(s.specialisms['MMath'])])}")
+                        #print(f"Specialism is {([copy_special])}")
+                        #print(f"Allowed spaces {([str(s.specialisms['MMath']) for s in spaces if copy_special in str(s.specialisms['MMath'])])}")
                         #only if constraint doesn't apply, can it be connected to any s without right specialism
                         #model.AddBoolAnd([x[cand_copy[idx],s].Not() for s in spaces if copy_special in s_special]).OnlyEnforceIf(special_con.Not()) #negative constraint
                         
@@ -121,10 +121,13 @@ def gen_matches(candidates, cand_copy, spaces, weights):
 
                         #if constraint applies, can be connected to any s with right specialism
                         model.AddBoolOr([x[cand_copy[idx],s] for s in spaces if copy_special in str(s.specialisms["MPhd"]) ]).OnlyEnforceIf(x[c,s]) #positive constraint
-                        print(f"Specialism is {([copy_special])}")
-                        print(f"Allowed spaces {([str(s.specialisms['MPhd']) for s in spaces if copy_special in str(s.specialisms['MPhd'])])}")
+                        #print(f"Specialism is {([copy_special])}")
+                        #print(f"Allowed spaces {([str(s.specialisms['MPhd']) for s in spaces if copy_special in str(s.specialisms['MPhd'])])}")
                         #only if constraint doesn't apply can it be connected to an s without right specialism
                         #model.AddBoolAnd([x[cand_copy[idx],s].Not() for s in spaces if str(cand_copy[idx].specialisms["MPhd"]) in str(s.specialisms["MPhd"])]).OnlyEnforceIf(special_con.Not()) #negative constraint
+                else:
+                    model.Add(x[c,s] == 0)
+                    model.Add(x[cand_copy[idx], s] == 0)
         idx += 1
     return cost
 
@@ -220,27 +223,31 @@ def create_calendar(candidates, cand_copy, spaces, solver, x, output_file='inter
     all_cand = candidates + cand_copy
     current_year = datetime.now().year
 
-    for c in all_cand:
+    for i in range (0,len(candidates)):
         for s in spaces:
-            if solver.Value(x[c, s]):
-                # Determine event start time
-                updated_date = s.date.replace(year=current_year)
-                if s.time == 'morning':
-                    start_time = datetime.combine(updated_date, datetime.strptime("09:00", "%H:%M").time())
-                elif s.time == 'afternoon':
-                    start_time = datetime.combine(updated_date, datetime.strptime("13:00", "%H:%M").time())
-                else:
-                    continue  # unknown time slot
+            for t in spaces:
+                if solver.Value(x[candidates[i], s]) and solver.Value(x[cand_copy[i], t]):
+                    # Determine event start time
+                    updated_date = s.date.replace(year=current_year)
+                    if s.time == 'morning':
+                        start_time = datetime.combine(updated_date, datetime.strptime("09:00", "%H:%M").time())
+                    elif s.time == 'afternoon':
+                        start_time = datetime.combine(updated_date, datetime.strptime("13:00", "%H:%M").time())
+                    else:
+                        continue  # unknown time slot
 
-                # Create event
-                event = Event()
-                event.add('summary', f'Interview: {c.name} with {s.interviewer}')
-                event.add('dtstart', start_time)
-                event.add('dtend', start_time + timedelta(hours=1))  # Assume 1 hour interview
-                event.add('location', s.location)
-                event.add('description', f'Subject: {c.subject}')
+                    # Create event
+                    event = Event()
+                    if cost[candidates[i],s] == 1000000:
+                        event.add('summary', f'⚠️ Interview: {candidates[i].name} with {s.interviewer} and {t.interviewer}')
+                    else:
+                        event.add('summary', f'Interview: {candidates[i].name} with {s.interviewer} and {t.interviewer}')
+                    event.add('dtstart', start_time)
+                    event.add('dtend', start_time + timedelta(hours=1))  # Assume 1 hour interview
+                    event.add('location', s.location)
+                    event.add('description', f'Subject: {c.subject}')
 
-                cal.add_component(event)
+                    cal.add_component(event)
 
     # Write to .ics file
     with open(output_file, 'wb') as f:
