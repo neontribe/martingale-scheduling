@@ -47,16 +47,23 @@ def create_calendar(candidates, cand_copy, spaces, solver, x, cost, output_file=
                     # Create event
                     event = Event()
                     if cost[candidates[i], s] == 1000000:
+                        # subjects don't match
+                        event.add('summary',
+                                  f'🚨 Interview: {candidates[i].name} with {s.interviewer} and {t.interviewer}')
+                        event.add('description',
+                                  f'Subject Mismatch: Candidate: {candidates[i].subject}, {s.interviewer}:{s.subjects}, {t.interviewer}, {t.subjects}')
+                    elif cost[candidates[i], s] == 10000:
                         event.add('summary',
                                   f'⚠️ Interview: {candidates[i].name} with {s.interviewer} and {t.interviewer}')
+                        event.add('description',
+                                  f'Subject {candidates[i].subject}. Availability mismatch: {candidates[i].avail}')
                     else:
                         event.add('summary',
                                   f'Interview: {candidates[i].name} with {s.interviewer} and {t.interviewer}')
+                        event.add('description', f'Subject {candidates[i].subject}')
                     event.add('dtstart', start_time)
                     event.add('dtend', start_time + timedelta(hours=1))  # Assume 1 hour interview
                     event.add('location', s.location)
-                    # TODO: `c` is undefined here
-                    event.add('description', f'Subject: {c.subject}')
 
                     if candidates[i].name == "Brian Brown":
                         print(candidates[i].subject)
