@@ -1,8 +1,8 @@
 import pandas as pd
 
 def extract_data():
-    candidate_df = pd.read_excel('20_applicants.xlsx')
-    academic_df = pd.read_excel('Scholarship_Assessor_Data.xlsx')
+    candidate_df = pd.read_excel('data/20_applicants.xlsx')
+    academic_df = pd.read_excel('data/Scholarship_Assessor_Data.xlsx')
     return candidate_df, academic_df
 
 def parse_schedule(schedule_str):
