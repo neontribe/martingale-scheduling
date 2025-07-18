@@ -1,33 +1,33 @@
 BEGIN:VCALENDAR
 BEGIN:VEVENT
-SUMMARY:Interview: Michael Thompson with Anthony King and Andrew Garcia
+SUMMARY:Interview: Michael Thompson with Sophie Thomas and Anthony King
 DTSTART:20251106T090000
 DTEND:20251106T100000
 DESCRIPTION:Subject Data Science Masters
 LOCATION:Manchester
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Michael Thompson with Megan Baker and Helen Cruz
+SUMMARY:Interview: Michael Thompson with Helen Cruz and Adam Allen
 DTSTART:20251106T130000
 DTEND:20251106T140000
 DESCRIPTION:Subject  AI Masters
 LOCATION:Manchester
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:⚠️ Interview: Natalie Sanchez with Matthew Baker and Daniel Cl
- ark
-DTSTART:20251110T090000
-DTEND:20251110T100000
+SUMMARY:⚠️ Interview: Natalie Sanchez with Matthew Baker and Lisa Jone
+ s
+DTSTART:20251110T130000
+DTEND:20251110T140000
 DESCRIPTION:Subject Engineering PhD. Availability mismatch: Monday 3 Novem
  ber (London)\; Tuesday 4 November (London)\; Thursday 6 November (Manchest
  er)
 LOCATION:Birmingham
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:⚠️ Interview: Natalie Sanchez with Michelle Thompson and Emily
-  Wright
-DTSTART:20251110T130000
-DTEND:20251110T140000
+SUMMARY:⚠️ Interview: Natalie Sanchez with Emily Wright and Steven Dav
+ is
+DTSTART:20251110T090000
+DTEND:20251110T100000
 DESCRIPTION:Subject  Maths PhD. Availability mismatch: Monday 3 November (
  London)\; Tuesday 4 November (London)\; Thursday 6 November (Manchester)
 LOCATION:Birmingham
@@ -40,7 +40,7 @@ DESCRIPTION:Subject  AI PhD
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Amy Hall with Emily Wright and Joseph Anderson
+SUMMARY:Interview: Amy Hall with Katie Allen and Emily Wright
 DTSTART:20251103T130000
 DTEND:20251103T140000
 DESCRIPTION:Subject Maths PhD
@@ -48,38 +48,38 @@ LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
 SUMMARY:⚠️ Interview: Amy Hall with Adam Allen and Helen Cruz
-DTSTART:20251110T090000
-DTEND:20251110T100000
+DTSTART:20251110T130000
+DTEND:20251110T140000
 DESCRIPTION:Subject  AI PhD. Availability mismatch: Tuesday 4 November (Lo
  ndon)\; Thursday 6 November (Manchester)\; Monday 3 November (London)
 LOCATION:Birmingham
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:⚠️ Interview: Amy Hall with Anthony Johnson and Daniel Clark
-DTSTART:20251110T130000
-DTEND:20251110T140000
+SUMMARY:⚠️ Interview: Amy Hall with Daniel Clark and Anthony Johnson
+DTSTART:20251110T090000
+DTEND:20251110T100000
 DESCRIPTION:Subject  Engineering PhD. Availability mismatch: Tuesday 4 Nov
  ember (London)\; Thursday 6 November (Manchester)\; Monday 3 November (Lon
  don)
 LOCATION:Birmingham
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Luke Rivera with Victoria Flores and Helen Cruz
-DTSTART:20251110T130000
-DTEND:20251110T140000
+SUMMARY:Interview: Luke Rivera with Megan Baker and Andrew Garcia
+DTSTART:20251106T090000
+DTEND:20251106T100000
 DESCRIPTION:Subject AI Masters
-LOCATION:Birmingham
+LOCATION:Manchester
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Brian Brown with Emily Wright and Olivia Robinson
+SUMMARY:Interview: Brian Brown with Olivia Robinson and Peter Robinson
 DTSTART:20251103T090000
 DTEND:20251103T100000
 DESCRIPTION:Subject Maths PhD
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:⚠️ Interview: Brian Brown with Charlotte Torres and Megan Bake
- r
+SUMMARY:⚠️ Interview: Brian Brown with Megan Baker and Charlotte Torre
+ s
 DTSTART:20251104T130000
 DTEND:20251104T140000
 DESCRIPTION:Subject  AI PhD. Availability mismatch: Monday 3 November (Lon
@@ -87,8 +87,7 @@ DESCRIPTION:Subject  AI PhD. Availability mismatch: Monday 3 November (Lon
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:⚠️ Interview: Brian Brown with Jonathan Rivera and Steven Jone
- s
+SUMMARY:⚠️ Interview: Brian Brown with Natalie Wright and Steven Jones
 DTSTART:20251104T090000
 DTEND:20251104T100000
 DESCRIPTION:Subject  Engineering PhD. Availability mismatch: Monday 3 Nove
@@ -97,53 +96,53 @@ DESCRIPTION:Subject  Engineering PhD. Availability mismatch: Monday 3 Nove
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: David Jackson with Amy Lewis and Victoria Flores
+SUMMARY:Interview: David Jackson with Andrew Garcia and Amy Lewis
 DTSTART:20251104T130000
 DTEND:20251104T140000
 DESCRIPTION:Subject AI Masters
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Adam Scott with Sophie Thomas and Megan Baker
-DTSTART:20251106T090000
-DTEND:20251106T100000
-DESCRIPTION:Subject AI Masters
-LOCATION:Manchester
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:⚠️ Interview: Christopher Young with Karen Young and Amy Lewis
-DTSTART:20251110T090000
-DTEND:20251110T100000
-DESCRIPTION:Subject AI Masters. Availability mismatch: Monday 3 November (
- London)\; Thursday 6 November (Manchester)
-LOCATION:Birmingham
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:⚠️ Interview: Christopher Young with Brian Hill and Jonathan R
- ivera
-DTSTART:20251104T130000
-DTEND:20251104T140000
-DESCRIPTION:Subject Engineering PhD. Availability mismatch: Monday 3 Novem
- ber (London)\; Thursday 6 November (Manchester)
-LOCATION:London
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:⚠️ Interview: Christopher Young with Megan Baker and Charlotte
-  Torres
+SUMMARY:Interview: Adam Scott with Andrew Garcia and Rebecca Flores
 DTSTART:20251104T090000
 DTEND:20251104T100000
-DESCRIPTION:Subject  AI PhD. Availability mismatch: Monday 3 November (Lon
- don)\; Thursday 6 November (Manchester)
+DESCRIPTION:Subject AI Masters
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:⚠️ Interview: Christopher Young with Peter Robinson and Sophie
-  Thomas
+SUMMARY:⚠️ Interview: Christopher Young with Rebecca Flores and Victor
+ ia Flores
+DTSTART:20251104T130000
+DTEND:20251104T140000
+DESCRIPTION:Subject AI Masters. Availability mismatch: Monday 3 November (
+ London)\; Thursday 6 November (Manchester)
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:⚠️ Interview: Christopher Young with Anthony Johnson and Sarah
+  Walker
 DTSTART:20251110T130000
 DTEND:20251110T140000
+DESCRIPTION:Subject Engineering PhD. Availability mismatch: Monday 3 Novem
+ ber (London)\; Thursday 6 November (Manchester)
+LOCATION:Birmingham
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:⚠️ Interview: Christopher Young with Helen Cruz and Adam Allen
+DTSTART:20251110T090000
+DTEND:20251110T100000
+DESCRIPTION:Subject  AI PhD. Availability mismatch: Monday 3 November (Lon
+ don)\; Thursday 6 November (Manchester)
+LOCATION:Birmingham
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:⚠️ Interview: Christopher Young with Steven Davis and Steven J
+ ones
+DTSTART:20251104T090000
+DTEND:20251104T100000
 DESCRIPTION:Subject  Maths PhD. Availability mismatch: Monday 3 November (
  London)\; Thursday 6 November (Manchester)
-LOCATION:Birmingham
+LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
 SUMMARY:Interview: Michael Nelson with Andrew Garcia and Jonathan Young
@@ -153,50 +152,50 @@ DESCRIPTION:Subject Data Science Masters
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Luke Perez with Andrew Garcia and Victoria Flores
-DTSTART:20251110T090000
-DTEND:20251110T100000
+SUMMARY:Interview: Luke Perez with Victoria Flores and Charlotte Torres
+DTSTART:20251103T090000
+DTEND:20251103T100000
 DESCRIPTION:Subject AI Masters
-LOCATION:Birmingham
+LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Elizabeth Hill with Megan Baker and Charlotte Torres
+SUMMARY:Interview: Elizabeth Hill with Megan Baker and Sarah Young
 DTSTART:20251103T130000
 DTEND:20251103T140000
 DESCRIPTION:Subject AI PhD
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Chloe Johnson with Andrew Garcia and Rebecca Flores
+SUMMARY:Interview: Chloe Johnson with Karen Young and Rebecca Flores
 DTSTART:20251106T130000
 DTEND:20251106T140000
 DESCRIPTION:Subject AI Masters
 LOCATION:Manchester
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Joshua Clark with Matthew Cruz and Rebecca Flores
-DTSTART:20251104T130000
-DTEND:20251104T140000
+SUMMARY:Interview: Joshua Clark with Peter Robinson and Charlotte Torres
+DTSTART:20251103T130000
+DTEND:20251103T140000
 DESCRIPTION:Subject Maths Masters
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Adam Lewis with Jennifer Anderson and Lisa Jones
-DTSTART:20251103T130000
-DTEND:20251103T140000
+SUMMARY:Interview: Adam Lewis with Jennifer Anderson and Sarah Walker
+DTSTART:20251103T090000
+DTEND:20251103T100000
 DESCRIPTION:Subject Engineering PhD
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Adam Carter with Rebecca Flores and Adam Allen
+SUMMARY:Interview: Adam Carter with Rebecca Flores and Victoria Flores
 DTSTART:20251103T130000
 DTEND:20251103T140000
 DESCRIPTION:Subject AI Masters
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:⚠️ Interview: Grace Carter with Peter Robinson and Rebecca Flo
- res
+SUMMARY:⚠️ Interview: Grace Carter with Jonathan Young and Steven Jone
+ s
 DTSTART:20251103T090000
 DTEND:20251103T100000
 DESCRIPTION:Subject Maths PhD. Availability mismatch: Thursday 6 November 
@@ -205,17 +204,17 @@ DESCRIPTION:Subject Maths PhD. Availability mismatch: Thursday 6 November
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Sophie Williams with Sophie Thomas and Anthony King
-DTSTART:20251110T090000
-DTEND:20251110T100000
+SUMMARY:Interview: Sophie Williams with Anthony King and Sarah Carter
+DTSTART:20251106T130000
+DTEND:20251106T140000
 DESCRIPTION:Subject Data Science Masters
-LOCATION:Birmingham
+LOCATION:Manchester
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Sophie Williams with Andrew Garcia and Adam Allen
-DTSTART:20251110T130000
-DTEND:20251110T140000
+SUMMARY:Interview: Sophie Williams with Rebecca Flores and Andrew Garcia
+DTSTART:20251103T090000
+DTEND:20251103T100000
 DESCRIPTION:Subject  AI Masters
-LOCATION:Birmingham
+LOCATION:London
 END:VEVENT
 END:VCALENDAR
