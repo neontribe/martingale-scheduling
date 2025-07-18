@@ -87,42 +87,33 @@ def gen_matches(candidates, cand_copy, spaces, weights):
             #if connection is disallowed, ensure x bool is false
             model.AddBoolAnd([x[cand_copy[idx],t].Not() for t in disallowed]).OnlyEnforceIf(x[c,s])
 
-            if c.subject in s.subjects: #do the courses match?
-                if s.datestr in c.avail: #do the availabilities match?
+            cost[(c, s)] = weights[(c.address,s.location)] #currently the weights are randomised
+            cost[(cand_copy[idx],s)] = weights[(cand_copy[idx].address, s.location)]
 
-                    cost[(c, s)] = weights[(c.address,s.location)] #currently the weights are randomised
-                    cost[(cand_copy[idx],s)] = weights[(cand_copy[idx].address, s.location)]
+            if c.subject in s.subjects: #do the courses match?
+                if s.datestr in c.avail: #do the availabilities match?]
 
                     if (str(c.specialisms["MMath"]) not in str(s.specialisms["MMath"])) and (str(c.specialisms["MMath"]) != "nan"):
-                        #if specialisms don't match, create constraint
-                        
                         #if c assigned to s, then c duplicate must be assigned to something with the same specialism 
+                        if x[c,s]:
+                            copy_special = str(cand_copy[idx].specialisms["MMath"])
+                            for t in spaces:
+                                if copy_special not in str(t.specialisms["MMath"]):
+                                    cost[(cand_copy[idx], t)] += 10000
 
-                        #copy of c can only be matched to spaces with matching specialism in masters
-                        copy_special = str(cand_copy[idx].specialisms["MMath"])
-
-                        #if constraint applies, can be connected to any s with right specialism
-                        model.AddBoolOr([x[cand_copy[idx],s] for s in spaces if copy_special in str(s.specialisms["MMath"])]).OnlyEnforceIf(x[c,s]) #positive constraint
-                        #only if constraint doesn't apply, can it be connected to any s without right specialism
-                        #model.AddBoolAnd([x[cand_copy[idx],s].Not() for s in spaces if copy_special in s_special]).OnlyEnforceIf(special_con.Not()) #negative constraint
-                        
                     if (str(c.specialisms["MPhd"]) not in str(s.specialisms["MPhd"])) and (str(c.specialisms["MPhd"]) != "nan"):
-                        #if specialisms don't match, create constraint
                         #if c assigned to s, then c duplicate must be assigned to something with the same specialism 
-
-                        #copy of c can only be matched to spaces with matching specialism in masters
-                        copy_special = str(cand_copy[idx].specialisms["MPhd"])
-
-                        #if constraint applies, can be connected to any s with right specialism
-                        model.AddBoolOr([x[cand_copy[idx],s] for s in spaces if copy_special in str(s.specialisms["MPhd"]) ]).OnlyEnforceIf(x[c,s]) #positive constraint
-                        #only if constraint doesn't apply can it be connected to an s without right specialism
-                        #model.AddBoolAnd([x[cand_copy[idx],s].Not() for s in spaces if str(cand_copy[idx].specialisms["MPhd"]) in str(s.specialisms["MPhd"])]).OnlyEnforceIf(special_con.Not()) #negative constraint
+                        if x[c,s]:
+                            copy_special = str(cand_copy[idx].specialisms["MPhd"])
+                            for t in spaces:
+                                if copy_special not in str(t.specialisms["MPhd"]):
+                                    cost[(cand_copy[idx], t)] += 10000     
                 else:
-                    cost[(c,s)] = 10000 #if the availabilities don't match, want this to be unfavourable
-                    cost[(cand_copy[idx],s)] = 10000
+                    cost[(c,s)] += 10000 #if the availabilities don't match, want this to be unfavourable
+                    cost[(cand_copy[idx],s)] += 10000
             else:
-                cost[(c,s)] = 1000000 #if the subjects don't match, want this to be very unfavourable
-                cost[(cand_copy[idx],s)] = 1000000
+                cost[(c,s)] += 1000000 #if the subjects don't match, want this to be very unfavourable
+                cost[(cand_copy[idx],s)] += 1000000
         idx += 1
     return cost
 
@@ -135,6 +126,7 @@ def gen_weights(candidate_df):
     for i in range (0, len(c_cities)):
         for j in range (0, len(s_cities)):
             weights[(c_cities.iloc[i], s_cities[j])] = random.randint(1,10) #at the moment I am just generating random weights
+    
     return weights
 
 def gen_ME_dates(df):
@@ -160,14 +152,37 @@ def gen_ME_dates(df):
             ME_dates[proper_dates[i]] = [proper_dates[i-1], proper_dates[i], proper_dates[i+1]]
     return ME_dates
 
-def gen_constraints(candidates, ME_dates):
+def date_constraints(candidates, spaces, cost):
     '''Ensures impossible assignments of interviewees being double booked 
     or assigned to different locations of consecutive days'''
     for c1 in candidates:
         for c2 in candidates:
             if (c1.name == c2.name) and (c1 != c2):
-                for s in spaces:
-                    model.AddBoolAnd([x[c2,t].Not() for t in spaces if ((t.date in ME_dates[s.date]) and (t.location != s.location)) or (t.date == s.date and t.time == s.time)]).OnlyEnforceIf(x[c1,s])
+                for s1 in spaces:
+                    for s2 in spaces:
+                        #disallow: double-booked or same day different location
+                        if ((s2.date == s1.date and s1.time == s2.time) or (s2.date == s1.date and s2.location != s1.time)):
+                            if x[c1,s1]:
+                                cost[c2,s2] += 1000000
+                        #undesirable: consecutive days, different locations
+                        elif ((s2.date.days() + 1 == s1.date.days()) or (s2.date.days - 1 == s1.date.days)) and (s1.location != s2.location):
+                            if x[c1,s1]:
+                                cost[c2,s2] += 10000
+    for s1 in spaces:
+        for s2 in spaces:
+            if (s1.interviewer == s2.interviewer) and (s1!= s2):
+                for c1 in candidates:
+                    for c2 in candidates:
+                        #disallow: double-booked or same day different location
+                        if ((s2.date == s1.date and s2.time == s1.time) or (s2.date == s1.date and s2.location != s1.time)):
+                            if x[c1,s1]:
+                                cost[c2,s2] += 1000000
+                        #undesirable: consecutive days, different locations
+                        elif ((s2.date.days() + 1 == s2.date.days()) or (s2.date.days - 1 == s1.date.days)) and (s2.location != s1.location):
+                            if x[c1,s1]:
+                                cost[c2,s2] += 10000
+    return cost
+                        
 
 model = cp_model.CpModel()
 candidate_df , academic_df = extract_data()
@@ -186,8 +201,8 @@ for c in cand_copy:
     for s in spaces:
         x[c, s] = model.NewBoolVar(f'x[{c}][{s}]')
 
-gen_constraints(candidates, ME_dates)
 cost = gen_matches(candidates, cand_copy, spaces, weights)
+cost = date_constraints(candidates, spaces, cost)
 
 all_cand = candidates + cand_copy
 
