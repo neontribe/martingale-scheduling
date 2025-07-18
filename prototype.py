@@ -31,10 +31,8 @@ def gen_matches(candidates, cand_copy, spaces, weights):
             # if connection is disallowed, ensure x bool is false
             model.AddBoolAnd([x[cand_copy[idx], t].Not() for t in disallowed]).OnlyEnforceIf(x[c, s])
 
-            cost[(c, s)] = 1000000  # if the availabilities don't match, want this to be basically impossible
-            cost[(cand_copy[idx], s)] = 1000000
-            if s.datestr in c.avail:  # do the availabilities match?
-                if c.subject in s.subjects:  # do the courses match?
+            if c.subject in s.subjects: #do the courses match?
+                if s.datestr in c.avail: #do the availabilities match?
 
                     cost[(c, s)] = weights[(c.address, s.location)]  # currently the weights are randomised
                     cost[(cand_copy[idx], s)] = weights[(cand_copy[idx].address, s.location)]
@@ -70,10 +68,11 @@ def gen_matches(candidates, cand_copy, spaces, weights):
                         # only if constraint doesn't apply can it be connected to an s without right specialism
                         # model.AddBoolAnd([x[cand_copy[idx],s].Not() for s in spaces if str(cand_copy[idx].specialisms["MPhd"]) in str(s.specialisms["MPhd"])]).OnlyEnforceIf(special_con.Not()) #negative constraint
                 else:
-                    print(
-                        f"Forbidden: {c.name} with {s.interviewer} for subject {c.subject} (space subjects: {s.subjects})")
-                    model.Add(x[c, s] == 0)
-                    model.Add(x[cand_copy[idx], s] == 0)
+                    cost[(c,s)] = 10000 #if the availabilities don't match, want this to be unfavourable
+                    cost[(cand_copy[idx],s)] = 10000
+            else:
+                cost[(c,s)] = 1000000 #if the subjects don't match, want this to be very unfavourable
+                cost[(cand_copy[idx],s)] = 1000000
         idx += 1
     return cost
 
