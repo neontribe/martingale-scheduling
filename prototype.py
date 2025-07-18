@@ -218,7 +218,7 @@ status = solver.Solve(model)
 
 # Output
 
-def create_calendar(candidates, cand_copy, spaces, solver, x, output_file='interviews.ics'):
+def create_calendar(candidates, cand_copy, spaces, solver, x, output_file='output/interviews.ics'):
     cal = Calendar()
 
     all_cand = candidates + cand_copy
