@@ -1,5 +1,5 @@
 from ortools.sat.python import cp_model
-import pandas as pd
+
 import random
 from datetime import datetime,timedelta
 from utilities import extract_data, parse_schedule, Space, Subj_Candidate
@@ -86,8 +86,6 @@ def gen_matches(candidates, cand_copy, spaces, weights):
 
             #if connection is disallowed, ensure x bool is false
             model.AddBoolAnd([x[cand_copy[idx],t].Not() for t in disallowed]).OnlyEnforceIf(x[c,s])
-            #only allow x bool to be true for disallowed connections if the constraint is turned off
-            #model.AddBoolOr([x[cand_copy[idx],t] for t in disallowed]).OnlyEnforceIf(copy_con.Not())
 
             if c.subject in s.subjects: #do the courses match?
                 if s.datestr in c.avail: #do the availabilities match?
@@ -105,8 +103,6 @@ def gen_matches(candidates, cand_copy, spaces, weights):
 
                         #if constraint applies, can be connected to any s with right specialism
                         model.AddBoolOr([x[cand_copy[idx],s] for s in spaces if copy_special in str(s.specialisms["MMath"])]).OnlyEnforceIf(x[c,s]) #positive constraint
-                        #print(f"Specialism is {([copy_special])}")
-                        #print(f"Allowed spaces {([str(s.specialisms['MMath']) for s in spaces if copy_special in str(s.specialisms['MMath'])])}")
                         #only if constraint doesn't apply, can it be connected to any s without right specialism
                         #model.AddBoolAnd([x[cand_copy[idx],s].Not() for s in spaces if copy_special in s_special]).OnlyEnforceIf(special_con.Not()) #negative constraint
                         
@@ -119,8 +115,6 @@ def gen_matches(candidates, cand_copy, spaces, weights):
 
                         #if constraint applies, can be connected to any s with right specialism
                         model.AddBoolOr([x[cand_copy[idx],s] for s in spaces if copy_special in str(s.specialisms["MPhd"]) ]).OnlyEnforceIf(x[c,s]) #positive constraint
-                        #print(f"Specialism is {([copy_special])}")
-                        #print(f"Allowed spaces {([str(s.specialisms['MPhd']) for s in spaces if copy_special in str(s.specialisms['MPhd'])])}")
                         #only if constraint doesn't apply can it be connected to an s without right specialism
                         #model.AddBoolAnd([x[cand_copy[idx],s].Not() for s in spaces if str(cand_copy[idx].specialisms["MPhd"]) in str(s.specialisms["MPhd"])]).OnlyEnforceIf(special_con.Not()) #negative constraint
                 else:
@@ -221,7 +215,6 @@ status = solver.Solve(model)
 def create_calendar(candidates, cand_copy, spaces, solver, x, output_file='output/interviews.ics'):
     cal = Calendar()
 
-    all_cand = candidates + cand_copy
     current_year = datetime.now().year
 
     for i in range (0,len(candidates)):
@@ -267,14 +260,7 @@ def create_calendar(candidates, cand_copy, spaces, solver, x, output_file='outpu
     print(f"Calendar written to {output_file}")
 
 
-if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]: 
-    # for c in range(0,len(candidates)): #needs to go through candidate copies too
-    #     for s in spaces:
-    #         if solver.Value(x[candidates[c], s]):
-    #             print(f"Interviewer 1 {s.interviewer} on {s.date, s.time} assigned to  {candidates[c].name} for subject {candidates[c].subject}")
-    #         if solver.Value(x[cand_copy[c],s]):
-    #             print(f"Interviewer 2 {s.interviewer} on {s.date, s.time} assigned to  {cand_copy[c].name} for subject {cand_copy[c].subject}")
-    # print("Total Cost =", solver.ObjectiveValue())
+if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]:
     create_calendar(candidates, cand_copy, spaces, solver, x)
 else:
     print("No feasible solution found.")
