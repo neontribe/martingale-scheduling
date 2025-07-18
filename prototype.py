@@ -89,10 +89,8 @@ def gen_matches(candidates, cand_copy, spaces, weights):
             #only allow x bool to be true for disallowed connections if the constraint is turned off
             #model.AddBoolOr([x[cand_copy[idx],t] for t in disallowed]).OnlyEnforceIf(copy_con.Not())
 
-            cost[(c,s)] = 1000000 #if the availabilities don't match, want this to be basically impossible
-            cost[(cand_copy[idx],s)] = 1000000
-            if s.datestr in c.avail: #do the availabilities match?
-                if c.subject in s.subjects: #do the courses match?
+            if c.subject in s.subjects: #do the courses match?
+                if s.datestr in c.avail: #do the availabilities match?
 
                     cost[(c, s)] = weights[(c.address,s.location)] #currently the weights are randomised
                     cost[(cand_copy[idx],s)] = weights[(cand_copy[idx].address, s.location)]
@@ -126,9 +124,11 @@ def gen_matches(candidates, cand_copy, spaces, weights):
                         #only if constraint doesn't apply can it be connected to an s without right specialism
                         #model.AddBoolAnd([x[cand_copy[idx],s].Not() for s in spaces if str(cand_copy[idx].specialisms["MPhd"]) in str(s.specialisms["MPhd"])]).OnlyEnforceIf(special_con.Not()) #negative constraint
                 else:
-                    print(f"Forbidden: {c.name} with {s.interviewer} for subject {c.subject} (space subjects: {s.subjects})")
-                    model.Add(x[c,s] == 0)
-                    model.Add(x[cand_copy[idx], s] == 0)
+                    cost[(c,s)] = 10000 #if the availabilities don't match, want this to be unfavourable
+                    cost[(cand_copy[idx],s)] = 10000
+            else:
+                cost[(c,s)] = 1000000 #if the subjects don't match, want this to be very unfavourable
+                cost[(cand_copy[idx],s)] = 1000000
         idx += 1
     return cost
 
@@ -240,13 +240,19 @@ def create_calendar(candidates, cand_copy, spaces, solver, x, output_file='outpu
                     # Create event
                     event = Event()
                     if cost[candidates[i],s] == 1000000:
+                        #subjects don't match
+                        event.add('summary', f'🚨 Interview: {candidates[i].name} with {s.interviewer} and {t.interviewer}')
+                        event.add('description', f'Subject Mismatch: Candidate: {candidates[i].subject}, {s.interviewer}:{s.subjects}, {t.interviewer}, {t.subjects}')
+                    elif cost[candidates[i],s] == 10000:
                         event.add('summary', f'⚠️ Interview: {candidates[i].name} with {s.interviewer} and {t.interviewer}')
+                        event.add('description', f'Subject {candidates[i].subject}. Availability mismatch: {candidates[i].avail}')
                     else:
                         event.add('summary', f'Interview: {candidates[i].name} with {s.interviewer} and {t.interviewer}')
+                        event.add('description', f'Subject {candidates[i].subject}')
                     event.add('dtstart', start_time)
                     event.add('dtend', start_time + timedelta(hours=1))  # Assume 1 hour interview
                     event.add('location', s.location)
-                    event.add('description', f'Subject: {c.subject}')
+                    
 
                     if candidates[i].name == "Brian Brown":
                         print(candidates[i].subject)
