@@ -126,6 +126,7 @@ def gen_matches(candidates, cand_copy, spaces, weights):
                         #only if constraint doesn't apply can it be connected to an s without right specialism
                         #model.AddBoolAnd([x[cand_copy[idx],s].Not() for s in spaces if str(cand_copy[idx].specialisms["MPhd"]) in str(s.specialisms["MPhd"])]).OnlyEnforceIf(special_con.Not()) #negative constraint
                 else:
+                    print(f"Forbidden: {c.name} with {s.interviewer} for subject {c.subject} (space subjects: {s.subjects})")
                     model.Add(x[c,s] == 0)
                     model.Add(x[cand_copy[idx], s] == 0)
         idx += 1
@@ -246,6 +247,11 @@ def create_calendar(candidates, cand_copy, spaces, solver, x, output_file='inter
                     event.add('dtend', start_time + timedelta(hours=1))  # Assume 1 hour interview
                     event.add('location', s.location)
                     event.add('description', f'Subject: {c.subject}')
+
+                    if candidates[i].name == "Brian Brown":
+                        print(candidates[i].subject)
+                        print(s.subjects)
+                        print(t.subjects)
 
                     cal.add_component(event)
 
