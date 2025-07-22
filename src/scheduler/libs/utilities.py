@@ -26,9 +26,9 @@ def parse_schedule(schedule_str):
     return dates, locations
 
 
-def create_calendar(candidates, cand_copy, spaces, solver, x, cost, output_file='output/interviews.ics'):
+def create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg, output_file='output/interviews.ics'):
     cal = Calendar()
-
+    cost_total = 0
     current_year = datetime.now().year
 
     for i in range(0, len(candidates)):
@@ -46,31 +46,37 @@ def create_calendar(candidates, cand_copy, spaces, solver, x, cost, output_file=
 
                     # Create event
                     event = Event()
-                    if cost[candidates[i], s] == 1000000:
+                    pair_cost = cost[candidates[i], s]
+                    pair_err = []
+
+                    try:
+                        pen = pen_dict[(candidates[i],s)]
+                        for pair in pen:
+                            (c2, s2, weight, err_msg) = pair
+                            if solver.Value(x[c2, s2]):
+                                pair_cost += weight
+                                pair_err += err_msg
+                    except KeyError:
+                        continue
+
+                    if int(pair_cost) >= 1000000:
                         # subjects don't match
                         event.add('summary',
                                   f'🚨 Interview: {candidates[i].name} with {s.interviewer} and {t.interviewer}')
-                        event.add('description',
-                                  f'Subject Mismatch: Candidate: {candidates[i].subject}, {s.interviewer}:{s.subjects}, {t.interviewer}, {t.subjects}')
-                    elif cost[candidates[i], s] == 10000:
+                    elif int(pair_cost) >= 10000:
                         event.add('summary',
                                   f'⚠️ Interview: {candidates[i].name} with {s.interviewer} and {t.interviewer}')
-                        event.add('description',
-                                  f'Subject {candidates[i].subject}. Availability mismatch: {candidates[i].avail}')
                     else:
                         event.add('summary',
                                   f'Interview: {candidates[i].name} with {s.interviewer} and {t.interviewer}')
-                        event.add('description', f'Subject {candidates[i].subject}')
+                    event.add('description',
+                    f'Penalties: {pair_err}, Cost: {cost_msg[(candidates[i],s)]} ')
                     event.add('dtstart', start_time)
                     event.add('dtend', start_time + timedelta(hours=1))  # Assume 1 hour interview
                     event.add('location', s.location)
 
-                    if candidates[i].name == "Brian Brown":
-                        print(candidates[i].subject)
-                        print(s.subjects)
-                        print(t.subjects)
-
                     cal.add_component(event)
+    print(cost_total)
 
     # Write to .ics file
     with open(output_file, 'wb') as f:
