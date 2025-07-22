@@ -73,14 +73,22 @@ class Subj_Candidate:
             for ele in mast_subjects:  # for every masters course being interviewed for
                 if (ele != "nan") and (name != "Name"):
                     course = ele + " Masters"
-                    subj_cand = Subj_Candidate(name, avail, address, specialisms, course)
+                    if ele == "Maths":
+                        specialism = specialisms["MMath"]
+                    else:
+                        specialism = "nan"
+                    subj_cand = Subj_Candidate(name, avail, address, specialism, course)
                     candidates.append(subj_cand)
                     ME_cand.append(subj_cand)
 
             for ele in phd_subjects:  # for every phd course being interviewed for
                 if ele != "nan" and (name != "Name"):
                     course = ele + " PhD"
-                    subj_cand = Subj_Candidate(name, avail, address, specialisms, course)
+                    if ele == "Maths":
+                        specialism = specialisms["MPhd"]
+                    else:
+                        specialism = "nan"
+                    subj_cand = Subj_Candidate(name, avail, address, specialism, course)
                     candidates.append(subj_cand)
                     ME_cand.append(subj_cand)
 
