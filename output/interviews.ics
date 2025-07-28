@@ -1,195 +1,222 @@
 BEGIN:VCALENDAR
 BEGIN:VEVENT
-SUMMARY:Interview: Michael Thompson with Andrew Garcia and Sarah Carter
+SUMMARY:Interview: Michael Thompson for Data Science Masters with Anthony 
+ King and Sarah Carter
 DTSTART:20251106T130000
 DTEND:20251106T140000
 DESCRIPTION:Penalties: []\, Cost: [] 
 LOCATION:Manchester
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Michael Thompson with Andrew Garcia and Adam Allen
-DTSTART:20251106T090000
-DTEND:20251106T100000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:Manchester
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Natalie Sanchez with Jonathan Rivera and Steven Jones
-DTSTART:20251104T130000
-DTEND:20251104T140000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:London
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Natalie Sanchez with Matthew Cruz and Olivia Robinson
-DTSTART:20251103T130000
-DTEND:20251103T140000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:London
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Natalie Sanchez with Adam Allen and Megan Baker
-DTSTART:20251103T090000
-DTEND:20251103T100000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:London
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Amy Hall with Olivia Robinson and Katie Allen
-DTSTART:20251103T090000
-DTEND:20251103T100000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:London
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Amy Hall with Charlotte Torres and Megan Baker
-DTSTART:20251104T130000
-DTEND:20251104T140000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:London
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Amy Hall with Jonathan Rivera and Jennifer Anderson
-DTSTART:20251104T090000
-DTEND:20251104T100000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:London
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Luke Rivera with Andrew Garcia and Sophie Thomas
+SUMMARY:Interview: Michael Thompson for AI Masters with Andrew Garcia and 
+ Amy Lewis
 DTSTART:20251110T130000
 DTEND:20251110T140000
 DESCRIPTION:Penalties: []\, Cost: [] 
 LOCATION:Birmingham
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Brian Brown with Adam Allen and Samuel Adams
+SUMMARY:Interview: Natalie Sanchez for Engineering PhD with Sarah Walker a
+ nd Steven Jones
+DTSTART:20251106T090000
+DTEND:20251106T100000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:Manchester
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Natalie Sanchez for Maths PhD with Rebecca Flores and E
+ mily Wright
+DTSTART:20251103T130000
+DTEND:20251103T140000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Natalie Sanchez for AI PhD with Charlotte Torres and Sa
+ rah Young
+DTSTART:20251103T090000
+DTEND:20251103T100000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Amy Hall for Maths PhD with Rebecca Flores and Olivia R
+ obinson
+DTSTART:20251103T090000
+DTEND:20251103T100000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Amy Hall for AI PhD with Adam Allen and Sarah Young
+DTSTART:20251103T130000
+DTEND:20251103T140000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Amy Hall for Engineering PhD with Sarah Walker and Stev
+ en Jones
+DTSTART:20251104T090000
+DTEND:20251104T100000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Luke Rivera for AI Masters with Adam Allen and Andrew G
+ arcia
+DTSTART:20251106T090000
+DTEND:20251106T100000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:Manchester
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Brian Brown for Maths PhD with Peter Robinson and Adam 
+ Allen
 DTSTART:20251110T090000
 DTEND:20251110T100000
 DESCRIPTION:Penalties: []\, Cost: [] 
 LOCATION:Birmingham
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Brian Brown with Helen Cruz and Adam Allen
+SUMMARY:Interview: Brian Brown for AI PhD with Megan Baker and Steven Clar
+ k
+DTSTART:20251106T090000
+DTEND:20251106T100000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:Manchester
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Brian Brown for Engineering PhD with Sarah Walker and S
+ teven Jones
+DTSTART:20251103T130000
+DTEND:20251103T140000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: David Jackson for AI Masters with Victoria Flores and K
+ aren Young
 DTSTART:20251110T130000
 DTEND:20251110T140000
 DESCRIPTION:Penalties: []\, Cost: [] 
 LOCATION:Birmingham
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Brian Brown with Jonathan Brown and Jonathan Rivera
+SUMMARY:Interview: Adam Scott for AI Masters with Sophie Thomas and Amy Le
+ wis
+DTSTART:20251106T130000
+DTEND:20251106T140000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:Manchester
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Christopher Young for AI Masters with Karen Young and S
+ ophie Thomas
+DTSTART:20251106T090000
+DTEND:20251106T100000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:Manchester
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Christopher Young for Engineering PhD with Sarah Walker
+  and Steven Jones
 DTSTART:20251103T090000
 DTEND:20251103T100000
 DESCRIPTION:Penalties: []\, Cost: [] 
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: David Jackson with Andrew Garcia and Amy Lewis
+SUMMARY:Interview: Christopher Young for AI PhD with Adam Allen and Steven
+  Clark
+DTSTART:20251106T130000
+DTEND:20251106T140000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:Manchester
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Christopher Young for Maths PhD with Olivia Robinson an
+ d Steven Jones
+DTSTART:20251103T130000
+DTEND:20251103T140000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Michael Nelson for Data Science Masters with Andrew Gar
+ cia and Jonathan Young
+DTSTART:20251103T130000
+DTEND:20251103T140000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Luke Perez for AI Masters with Andrew Garcia and Megan 
+ Baker
+DTSTART:20251106T130000
+DTEND:20251106T140000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:Manchester
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Elizabeth Hill for AI PhD with Charlotte Torres and Meg
+ an Baker
 DTSTART:20251104T130000
 DTEND:20251104T140000
 DESCRIPTION:Penalties: []\, Cost: [] 
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Adam Scott with Amy Lewis and Sophie Thomas
-DTSTART:20251106T130000
-DTEND:20251106T140000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:Manchester
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Christopher Young with Megan Baker and Helen Cruz
-DTSTART:20251106T090000
-DTEND:20251106T100000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:Manchester
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Christopher Young with Natalie Wright and Steven Jones
-DTSTART:20251106T130000
-DTEND:20251106T140000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:Manchester
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Christopher Young with Adam Allen and Charlotte Torres
-DTSTART:20251103T130000
-DTEND:20251103T140000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:London
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Christopher Young with Steven Davis and Emily Wright
+SUMMARY:Interview: Chloe Johnson for AI Masters with Andrew Garcia and Meg
+ an Baker
 DTSTART:20251103T090000
 DTEND:20251103T100000
 DESCRIPTION:Penalties: []\, Cost: [] 
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Michael Nelson with Jonathan Young and Andrew Garcia
-DTSTART:20251103T090000
-DTEND:20251103T100000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:London
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Luke Perez with Rebecca Flores and Karen Young
-DTSTART:20251106T090000
-DTEND:20251106T100000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:Manchester
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Elizabeth Hill with Adam Allen and Steven Clark
-DTSTART:20251106T130000
-DTEND:20251106T140000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:Manchester
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Chloe Johnson with Charlotte Torres and Rebecca Flores
-DTSTART:20251103T090000
-DTEND:20251103T100000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:London
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Joshua Clark with Matthew Cruz and Emily Wright
+SUMMARY:Interview: Joshua Clark for Maths Masters with Laura White and Meg
+ an Baker
 DTSTART:20251104T090000
 DTEND:20251104T100000
 DESCRIPTION:Penalties: []\, Cost: [] 
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Adam Lewis with Jennifer Anderson and Jonathan Rivera
+SUMMARY:Interview: Adam Lewis for Engineering PhD with Matthew Baker and J
+ onathan Rivera
+DTSTART:20251103T090000
+DTEND:20251103T100000
+DESCRIPTION:Penalties: []\, Cost: [] 
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Adam Carter for AI Masters with Victoria Flores and Meg
+ an Baker
 DTSTART:20251103T130000
 DTEND:20251103T140000
 DESCRIPTION:Penalties: []\, Cost: [] 
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Adam Carter with Victoria Flores and Megan Baker
-DTSTART:20251103T130000
-DTEND:20251103T140000
+SUMMARY:Interview: Grace Carter for Maths PhD with Helen Cruz and Samuel A
+ dams
+DTSTART:20251106T130000
+DTEND:20251106T140000
 DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:London
+LOCATION:Manchester
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Grace Carter with Rebecca Flores and Steven Davis
-DTSTART:20251104T090000
-DTEND:20251104T100000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:London
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Sophie Williams with Amy Lewis and Sophie Thomas
+SUMMARY:Interview: Sophie Williams for Data Science Masters with Sarah Car
+ ter and Amy Lewis
 DTSTART:20251106T090000
 DTEND:20251106T100000
 DESCRIPTION:Penalties: []\, Cost: [] 
 LOCATION:Manchester
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Sophie Williams with Rebecca Flores and Helen Cruz
+SUMMARY:Interview: Sophie Williams for AI Masters with Rebecca Flores and 
+ Karen Young
 DTSTART:20251106T130000
 DTEND:20251106T140000
 DESCRIPTION:Penalties: []\, Cost: [] 

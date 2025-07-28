@@ -1,11 +1,14 @@
 import copy
 import random
+import time
+from tqdm import tqdm
 
 from ortools.sat.python import cp_model
 from collections import defaultdict
 
-from .libs.classes import Space, Subj_Candidate
-from .libs.utilities import extract_data, create_calendar
+from libs.classes import Space, Subj_Candidate
+from libs.utilities import extract_data, create_calendar
+
 
 
 class Scheduler:
@@ -16,6 +19,7 @@ class Scheduler:
         self.cost = {}
         self.pen_dict = defaultdict(list)
         self.cost_msg = defaultdict(list)
+        
 
     def gen_matches(self, candidates, cand_copy, spaces, weights):
         """Finds suitable matches between candidate objects and spaces by accessing the relevant attributes.
@@ -25,6 +29,8 @@ class Scheduler:
         idx = 0
         for c in candidates:
             for s in spaces:
+                if s.interviewer == "Karen Young":
+                    print("Its Karen!")
                 # for a given space, s, matched to candidate c
 
                 # must enforce that cand and cand_copy have to be matched to a space with the same date, time and location
@@ -43,37 +49,40 @@ class Scheduler:
                 self.cost[(c, s)] = weights[(c.address, s.location)]
                 self.cost[(cand_copy[idx], s)] = weights[(cand_copy[idx].address, s.location)]
 
-                # do the courses match?
-                if c.subject in s.subjects:
-                    # do the availabilities match?
-                    if s.datestr in c.avail:
-                        if ("Masters" in str(c.subject)) and (str(c.specialisms) not in str(s.specialisms["MMath"])) and (str(c.specialisms) != "nan"):
-                            # if c assigned to s, then c duplicate must be assigned to something with the same specialism
-                            copy_special = str(cand_copy[idx].specialisms)
-                            for t in spaces:
-                                if (s != t) and (copy_special not in str(t.specialisms["MMath"])):
-                                    penalty = self.model.NewBoolVar(f"penalty1_{c}_{cand_copy[idx]}_{s}_{t}")
-                                    # trigger penalty if both x[c1,s1] and x[c2,s2] are true
-                                    self.model.Add(penalty >= self.x[c, s] + self.x[cand_copy[idx], t] - 1)
-                                    self.penalties.append((penalty, 10000))
-                                    self.pen_dict[(c, s)].append((cand_copy[idx], t, 10000, f"Masters specialism mismatch: c: {c.specialisms}, s1: {s.specialisms['MMath']}, s2: {t.specialisms['MMath']}"))
-                        if ("Phd" in str(c.subject)) and (str(c.specialisms) not in str(s.specialisms["MPhd"])) and (str(c.specialisms) != "nan"):
-                            # if c assigned to s, then c duplicate must be assigned to something with the same specialism
-                            copy_special = str(cand_copy[idx].specialisms)
-                            for t in spaces:
-                                if (s != t) and (copy_special not in str(t.specialisms["MPhd"])):
-                                    penalty = self.model.NewBoolVar(f"penalty2_{c}_{cand_copy[idx]}_{s}_{t}")
-                                    # trigger penalty if both x[c1,s1] and x[c2,s2] are true
-                                    self.model.Add(penalty >= self.x[c, s] + self.x[cand_copy[idx], t] - 1)
-                                    self.penalties.append((penalty, 10000))
-                                    self.pen_dict[(c, s)].append((cand_copy[idx], t, 10000, f"Phd specialism mismatch: c: {c.specialisms}, s1: {s.specialisms['MPhd']}, s2: {t.specialisms['MPhd']}"))
-                    else:
+                # do the courses and availabilities match?
+                if (c.subject in s.subjects) and (s.datestr in c.avail):
+                    if s.interviewer == "Karen Young":
+                        print(f"Karen matched with {c.name}")
+                    c_special = set(c.specialisms)
+                    if ("Masters" in str(c.subject)) and (c_special.intersection(s.specialisms["MMath"]) == set()) and (str(c.specialisms) != "nan"):
+                        print(f'candidate specialism {c_special}, interviewer specialisms {s.specialisms["MMath"]}, intersection {c_special.intersection(s.specialisms["MMath"])}' )
+                        # if c assigned to s, then c duplicate must be assigned to something with the same specialism
+                        copy_special = set(cand_copy[idx].specialisms)
+                        for t in spaces:
+                            if (s != t) and (copy_special.intersection(t.specialisms["MMath"]) == set()):
+                                penalty = self.model.NewBoolVar(f"penalty1_{c}_{cand_copy[idx]}_{s}_{t}")
+                                # trigger penalty if both x[c1,s1] and x[c2,s2] are true
+                                self.model.Add(penalty >= self.x[c, s] + self.x[cand_copy[idx], t] - 1)
+                                self.penalties.append((penalty, 10000))
+                                self.pen_dict[(c, s)].append((cand_copy[idx], t, 10000, f"Masters specialism mismatch: c: {c.specialisms}, s1: {s.specialisms['MMath']}, s2: {t.specialisms['MMath']}"))
+                    if ("Phd" in str(c.subject)) and (c_special.intersection(s.specialisms["MPhd"]) == set()) and (str(c.specialisms) != "nan"):
+                        # if c assigned to s, then c duplicate must be assigned to something with the same specialism
+                        print(f'candidate specialism {c_special}, interviewer specialisms {s.specialisms["MPhd"]}, intersection {c_special.intersection(s.specialisms["MPhd"])}' )
+                        copy_special = str(cand_copy[idx].specialisms)
+                        for t in spaces:
+                            if (s != t) and (copy_special.intersection(t.specialisms["MPhd"]) == set()):
+                                penalty = self.model.NewBoolVar(f"penalty2_{c}_{cand_copy[idx]}_{s}_{t}")
+                                # trigger penalty if both x[c1,s1] and x[c2,s2] are true
+                                self.model.Add(penalty >= self.x[c, s] + self.x[cand_copy[idx], t] - 1)
+                                self.penalties.append((penalty, 10000))
+                                self.pen_dict[(c, s)].append((cand_copy[idx], t, 10000, f"Phd specialism mismatch: c: {c.specialisms}, s1: {s.specialisms['MPhd']}, s2: {t.specialisms['MPhd']}"))
+                if (s.datestr not in c.avail):
                         # if the availabilities don't match, want this to be unfavourable
                         self.cost[(c, s)] += 10000
                         self.cost[(cand_copy[idx], s)] += 10000
                         self.cost_msg[(c, s)].append("Avail mismatch")
                         self.cost_msg[(cand_copy[idx], s)].append("Avail mismatch")
-                else:
+                if (c.subject not in s.subjects):
                     # if the subjects don't match, want this to be very unfavourable
                     self.cost[(c, s)] += 1000000
                     self.cost[(cand_copy[idx], s)] += 1000000
@@ -90,7 +99,7 @@ class Scheduler:
         for i in range(0, len(c_cities)):
             for j in range(0, len(s_cities)):
                 # at the moment I am just generating random weights
-                weights[(c_cities.iloc[i], s_cities[j])] = random.randint(1, 10)
+                weights[(c_cities.iloc[i], s_cities[j])] = 5
         return weights
 
 
@@ -149,16 +158,28 @@ class Scheduler:
                 self.x[c, s] = self.model.NewBoolVar(f'x[{c}][{s}]')
 
     def run(self):
+        print("Please be patient, this may take a few minutes")
+        start = time.time()
         candidate_df, academic_df = extract_data()
+        end = time.time()
+        print(f"Data has been extracted in {end - start} seconds")
+
+        start = time.time()
         spaces = Space.gen_spaces(academic_df)
-        candidates, _ = Subj_Candidate.gen_cand(candidate_df)
+        candidates = Subj_Candidate.gen_cand(candidate_df)
         weights = self.gen_weights(candidate_df)
         cand_copy = copy.deepcopy(candidates)
+        end = time.time()
+        print(f"Data objects have been generated in {end - start} seconds")
 
+        start = time.time()
         self.setup_decision_variables(candidates, cand_copy, spaces)
         self.gen_matches(candidates, cand_copy, spaces, weights)
         self.date_constraints(candidates, spaces)
+        end = time.time()
+        print(f"Constraints have been generated in {end - start} seconds")
 
+        start = time.time()
         all_cand = candidates + cand_copy
 
         # Each candidate assigned to exactly one space
@@ -174,12 +195,23 @@ class Scheduler:
             sum(self.cost[c, s] * self.x[c, s] for c in all_cand for s in spaces) +
             sum(weight * p for (p, weight) in self.penalties)
         )
+        end = time.time()
+        print(f"Final set up completed in {end - start} seconds. Now solving...")
 
         # Solve
+        start = time.time()
         solver = cp_model.CpSolver()
-        status = solver.Solve(self.model)
-        solver.parameters.max_time_in_seconds = 60.0
+        solver.parameters.max_time_in_seconds = 60
 
+        status = solver.Solve(self.model)
+        end = time.time()
+        for c in all_cand:
+            for s in spaces:
+                #if solver.Value(self.x[c, s]) == 1:
+                    #print(f"Cost of {c.name} with {s.interviewer} on {s.date}{s.time} is {self.cost[c,s]}")
+                if s.interviewer == "Karen Young":
+                    print(f"Cost of Karen with {c.name} for {c.subject} on {s.date} {s.time} is {self.cost[c,s]}")
+        print(f"Solution generated in {end - start} seconds. Now generating calendar...")
         if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]:
             # create and store a calendar file
             create_calendar(candidates, cand_copy, spaces, solver, self.x, self.cost, self.pen_dict, self.cost_msg)
@@ -189,3 +221,6 @@ class Scheduler:
             print("Conflicts:", solver.NumConflicts())
             print("Branches:", solver.NumBranches())
             print("Wall time:", solver.WallTime())
+
+scheduler = Scheduler()
+scheduler.run()

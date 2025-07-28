@@ -62,13 +62,13 @@ def create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, co
                     if int(pair_cost) >= 1000000:
                         # subjects don't match
                         event.add('summary',
-                                  f'🚨 Interview: {candidates[i].name} with {s.interviewer} and {t.interviewer}')
+                                  f'🚨 Interview: {candidates[i].name} for {candidates[i].subject} with {s.interviewer} and {t.interviewer}')
                     elif int(pair_cost) >= 10000:
                         event.add('summary',
-                                  f'⚠️ Interview: {candidates[i].name} with {s.interviewer} and {t.interviewer}')
+                                  f'⚠️ Interview: {candidates[i].name} for {candidates[i].subject} with {s.interviewer} and {t.interviewer}')
                     else:
                         event.add('summary',
-                                  f'Interview: {candidates[i].name} with {s.interviewer} and {t.interviewer}')
+                                  f'Interview: {candidates[i].name} for {candidates[i].subject} with {s.interviewer} and {t.interviewer}')
                     event.add('description',
                     f'Penalties: {pair_err}, Cost: {cost_msg[(candidates[i],s)]} ')
                     event.add('dtstart', start_time)
