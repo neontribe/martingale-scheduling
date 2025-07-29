@@ -1,7 +1,8 @@
-from scheduler.libs.utilities import parse_schedule
-from scheduler.libs.classes import Space
+from src.scheduler.libs.utilities import parse_schedule
+from src.scheduler.libs.classes import Space
 import pandas as pd
 from datetime import datetime
+from pathlib import Path
 
 def test_parse_schedule_valid():
     input_str = "Monday 3 November (London); Tuesday 4 November (Manchester)"
@@ -33,7 +34,9 @@ def test_gen_spaces_single_interviewer():
         ]
     }
 
-    df = pd.read_excel('gen_spaces_test.xlsx')
+    test_dir = Path(__file__).parent
+    file_path = test_dir / "data" / "gen_spaces_test.xlsx"
+    df = pd.read_excel(file_path)
 
     spaces = Space.gen_spaces(df)
 
