@@ -28,7 +28,6 @@ def parse_schedule(schedule_str):
 
 def create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg, output_file='output/interviews.ics'):
     cal = Calendar()
-    cost_total = 0
     current_year = datetime.now().year
 
     for i in range(0, len(candidates)):
@@ -76,7 +75,6 @@ def create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, co
                     event.add('location', s.location)
 
                     cal.add_component(event)
-    print(cost_total)
 
     # Write to .ics file
     with open(output_file, 'wb') as f:

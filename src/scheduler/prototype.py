@@ -29,8 +29,6 @@ class Scheduler:
         idx = 0
         for c in candidates:
             for s in spaces:
-                if s.interviewer == "Karen Young":
-                    print("Its Karen!")
                 # for a given space, s, matched to candidate c
 
                 # must enforce that cand and cand_copy have to be matched to a space with the same date, time and location
@@ -51,11 +49,8 @@ class Scheduler:
 
                 # do the courses and availabilities match?
                 if (c.subject in s.subjects) and (s.datestr in c.avail):
-                    if s.interviewer == "Karen Young":
-                        print(f"Karen matched with {c.name}")
                     c_special = set(c.specialisms)
                     if ("Masters" in str(c.subject)) and (c_special.intersection(s.specialisms["MMath"]) == set()) and (str(c.specialisms) != "nan"):
-                        print(f'candidate specialism {c_special}, interviewer specialisms {s.specialisms["MMath"]}, intersection {c_special.intersection(s.specialisms["MMath"])}' )
                         # if c assigned to s, then c duplicate must be assigned to something with the same specialism
                         copy_special = set(cand_copy[idx].specialisms)
                         for t in spaces:
@@ -67,8 +62,6 @@ class Scheduler:
                                 self.pen_dict[(c, s)].append((cand_copy[idx], t, 10000, f"Masters specialism mismatch: c: {c.specialisms}, s1: {s.specialisms['MMath']}, s2: {t.specialisms['MMath']}"))
                     if ("Phd" in str(c.subject)) and (c_special.intersection(s.specialisms["MPhd"]) == set()) and (str(c.specialisms) != "nan"):
                         # if c assigned to s, then c duplicate must be assigned to something with the same specialism
-                        print(f'candidate specialism {c_special}, interviewer specialisms {s.specialisms["MPhd"]}, intersection {c_special.intersection(s.specialisms["MPhd"])}' )
-                        copy_special = str(cand_copy[idx].specialisms)
                         for t in spaces:
                             if (s != t) and (copy_special.intersection(t.specialisms["MPhd"]) == set()):
                                 penalty = self.model.NewBoolVar(f"penalty2_{c}_{cand_copy[idx]}_{s}_{t}")

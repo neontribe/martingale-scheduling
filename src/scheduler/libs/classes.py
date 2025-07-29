@@ -35,7 +35,7 @@ class Space:
 
             mmath = set(mmath)
             mphd = set(mphd)
-            specialisms = {"MMath": mmath, "MPhd": mphd}
+            specialisms = {"MMath TEST": mmath, "MPhd": mphd}
             interviewer = df[col].iloc[0]
             # separating out the dates and corresponding locations from availability cell
 
