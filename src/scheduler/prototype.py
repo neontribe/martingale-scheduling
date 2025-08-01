@@ -2,12 +2,14 @@ import copy
 import random
 import time
 from tqdm import tqdm
+from pathlib import Path
+import sys
 
 from ortools.sat.python import cp_model
 from collections import defaultdict
 
-from libs.classes import Space, Subj_Candidate
-from libs.utilities import extract_data, create_calendar
+from src.scheduler.libs.classes import Space, Subj_Candidate
+from src.scheduler.libs.utilities import extract_data, create_calendar
 
 
 
@@ -153,7 +155,16 @@ class Scheduler:
     def run(self):
         print("Please be patient, this may take a few minutes")
         start = time.time()
-        candidate_df, academic_df = extract_data()
+        # If frozen (compiled with PyInstaller), use the executable's path
+        if getattr(sys, 'frozen', False):
+            base_path = Path(sys._MEIPASS).parents[4]  # or Path(sys.executable).parent
+        else:
+            base_path = Path(__file__).parents[2]
+        rel_cand_path = Path("./data/Minimum_Application_Data.xlsx")
+        rel_ac_path = Path("./data/Minimum_Assessor_Data.xlsx")
+        abs_cand_path = (base_path / rel_cand_path).resolve()
+        abs_ac_path = (base_path / rel_ac_path).resolve()
+        candidate_df, academic_df = extract_data(abs_cand_path, abs_ac_path)
         end = time.time()
         print(f"Data has been extracted in {end - start} seconds")
 
@@ -198,22 +209,15 @@ class Scheduler:
 
         status = solver.Solve(self.model)
         end = time.time()
-        for c in all_cand:
-            for s in spaces:
-                #if solver.Value(self.x[c, s]) == 1:
-                    #print(f"Cost of {c.name} with {s.interviewer} on {s.date}{s.time} is {self.cost[c,s]}")
-                if s.interviewer == "Karen Young":
-                    print(f"Cost of Karen with {c.name} for {c.subject} on {s.date} {s.time} is {self.cost[c,s]}")
-        print(f"Solution generated in {end - start} seconds. Now generating calendar...")
         if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]:
             # create and store a calendar file
-            create_calendar(candidates, cand_copy, spaces, solver, self.x, self.cost, self.pen_dict, self.cost_msg)
+            print(f"Solution generated in {end - start} seconds. Now generating calendar...")
+            output_rel_path  = Path("./output/interviews.ics")
+            output_file = (base_path / output_rel_path).resolve()
+            create_calendar(candidates, cand_copy, spaces, solver, self.x, self.cost, self.pen_dict, self.cost_msg, output_file)
         else:
             print("No feasible solution found.")
             print("Status:", solver.StatusName())
             print("Conflicts:", solver.NumConflicts())
             print("Branches:", solver.NumBranches())
             print("Wall time:", solver.WallTime())
-
-scheduler = Scheduler()
-scheduler.run()

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from .utilities import parse_schedule
+from src.scheduler.libs.utilities import parse_schedule
 
 
 class Space:
@@ -35,7 +35,7 @@ class Space:
 
             mmath = set(mmath)
             mphd = set(mphd)
-            specialisms = {"MMath TEST": mmath, "MPhd": mphd}
+            specialisms = {"MMath": mmath, "MPhd": mphd}
             interviewer = df[col].iloc[0]
             # separating out the dates and corresponding locations from availability cell
 

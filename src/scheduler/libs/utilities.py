@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
-
+from pathlib import Path
 import pandas as pd
 from icalendar import Calendar, Event
 
 
-def extract_data():
-    candidate_df = pd.read_excel('data/20_applicants.xlsx')
-    academic_df = pd.read_excel('data/Scholarship_Assessor_Data.xlsx')
+def extract_data(abs_cand_path, abs_ac_path):
+    candidate_df = pd.read_excel(abs_cand_path)
+    academic_df = pd.read_excel(abs_ac_path)
     return candidate_df, academic_df
 
 
@@ -26,7 +26,7 @@ def parse_schedule(schedule_str):
     return dates, locations
 
 
-def create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg, output_file='output/interviews.ics'):
+def create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg, output_file):
     cal = Calendar()
     current_year = datetime.now().year
 
