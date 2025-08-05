@@ -1,7 +1,5 @@
 import copy
-import random
 import time
-from tqdm import tqdm
 from pathlib import Path
 import sys
 
@@ -10,8 +8,6 @@ from collections import defaultdict
 
 from src.scheduler.libs.classes import Space, Subj_Candidate
 from src.scheduler.libs.utilities import extract_data, create_calendar
-
-
 
 class Scheduler:
     def __init__(self):
@@ -212,9 +208,11 @@ class Scheduler:
         if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]:
             # create and store a calendar file
             print(f"Solution generated in {end - start} seconds. Now generating calendar...")
-            output_rel_path  = Path("./output/interviews.ics")
-            output_file = (base_path / output_rel_path).resolve()
-            create_calendar(candidates, cand_copy, spaces, solver, self.x, self.cost, self.pen_dict, self.cost_msg, output_file)
+            output_data_rel_path  = Path("./output/data_interviews.ics")
+            output_clean_rel_path = Path("./output/clean_interviews.ics")
+            output_file_data = (base_path / output_data_rel_path).resolve()
+            output_file_clean = (base_path / output_clean_rel_path).resolve()
+            create_calendar(candidates, cand_copy, spaces, solver, self.x, self.cost, self.pen_dict, self.cost_msg, output_file_data, output_file_clean)
         else:
             print("No feasible solution found.")
             print("Status:", solver.StatusName())

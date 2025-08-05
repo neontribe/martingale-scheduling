@@ -26,8 +26,9 @@ def parse_schedule(schedule_str):
     return dates, locations
 
 
-def create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg, output_file):
-    cal = Calendar()
+def create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg, output_file_data, output_file_clean):
+    cal = Calendar() #contains ALL the info
+    cal_copy = Calendar() #for restricted data
     current_year = datetime.now().year
 
     for i in range(0, len(candidates)):
@@ -44,7 +45,8 @@ def create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, co
                         continue  # unknown time slot
 
                     # Create event
-                    event = Event()
+                    event = Event() #for calendar with all the data
+                    event_copy = Event() #for private calendar with restricted data
                     pair_cost = cost[candidates[i], s]
                     pair_err = []
 
@@ -68,15 +70,24 @@ def create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, co
                     else:
                         event.add('summary',
                                   f'Interview: {candidates[i].name} for {candidates[i].subject} with {s.interviewer} and {t.interviewer}')
+                    event_copy.add('summary',
+                                   f'Interview: {candidates[i].name} for {candidates[i].subject} with {s.interviewer} and {t.interviewer}')
                     event.add('description',
-                    f'Penalties: {pair_err}, Cost: {cost_msg[(candidates[i],s)]} ')
+                    f'Total cost {pair_cost}. Penalties: {pair_err}, Cost: {cost_msg[(candidates[i],s)]}, Candidate location {candidates[i].address}, Candidate specialism(s) {candidates[i].specialism}, {s.interviewer} subjects(s): {s.subjects} and specialisms: {s.specialisms}, {t.interviewer} subjects(s) {t.subjects} and specialisms {t.specialisms}')
                     event.add('dtstart', start_time)
-                    event.add('dtend', start_time + timedelta(hours=1))  # Assume 1 hour interview
+                    event_copy.add('dtstart', start_time)
+                    event.add('dtend', start_time + timedelta(hours=3)) 
+                    event_copy.add('dtend', start_time + timedelta(hours = 3)) 
                     event.add('location', s.location)
+                    event_copy.add('location', s.location)
 
                     cal.add_component(event)
+                    cal_copy.add_component(event_copy)
 
-    # Write to .ics file
-    with open(output_file, 'wb') as f:
+    # Write to first .ics file
+    with open(output_file_data, 'wb') as f:
         f.write(cal.to_ical())
-    print(f"Calendar written to {output_file}")
+    print(f"Calendar with extra data written to {output_file_data}")
+    with open(output_file_clean, 'wb') as f:
+        f.write(cal_copy.to_ical())
+    print(f"Calendar without extra data written to {output_file_clean}")
