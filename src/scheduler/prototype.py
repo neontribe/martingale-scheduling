@@ -6,8 +6,12 @@ import sys
 from ortools.sat.python import cp_model
 from collections import defaultdict
 
-from src.scheduler.libs.classes import Space, Subj_Candidate
-from src.scheduler.libs.utilities import extract_data, create_calendar
+#from src.scheduler.libs.classes import Space, Subj_Candidate
+
+# from src.scheduler.libs.utilities import extract_data, create_calendar
+
+from libs.utilities import extract_data, create_calendar
+from libs.classes import Space, Subj_Candidate
 
 class Scheduler:
     def __init__(self):
@@ -81,16 +85,19 @@ class Scheduler:
                     self.cost_msg[(cand_copy[idx], s)].append("Subject mismatch")
             idx += 1
 
-    def gen_weights(self, candidate_df):
+    def gen_weights(self,df):
         """Creates a dictionary of weights between cities
         Currently generates this randomly"""
+        
         weights = {}
-        c_cities = candidate_df.iloc[6]
-        s_cities = ["London", "Manchester", "Birmingham"]
-        for i in range(0, len(c_cities)):
-            for j in range(0, len(s_cities)):
-                # at the moment I am just generating random weights
-                weights[(c_cities.iloc[i], s_cities[j])] = 5
+        
+        # Iterate through the DataFrame
+        for termtime_city in df.index:
+            for interview_location in df.columns:
+                weight_value = df.loc[termtime_city, interview_location]
+                # Convert to integer and store with tuple key
+                weights[(termtime_city, interview_location)] = int(weight_value)
+        
         return weights
 
 
@@ -156,25 +163,38 @@ class Scheduler:
             base_path = Path(sys._MEIPASS).parents[4]  # or Path(sys.executable).parent
         else:
             base_path = Path(__file__).parents[2]
-        rel_cand_path = Path("./data/Minimum_Application_Data.xlsx")
-        rel_ac_path = Path("./data/Minimum_Assessor_Data.xlsx")
+        rel_cand_path = Path("./data/scholarship_candidates.xlsx")
+        rel_ac_path = Path("./data/academic_assessors_70.xlsx")
+        rel_loc_path = Path("./data/Locations.xlsx")
         abs_cand_path = (base_path / rel_cand_path).resolve()
         abs_ac_path = (base_path / rel_ac_path).resolve()
-        candidate_df, academic_df = extract_data(abs_cand_path, abs_ac_path)
+        abs_loc_path = (base_path / rel_loc_path).resolve()
+        candidate_df, academic_df, location_df = extract_data(abs_cand_path, abs_ac_path, abs_loc_path)
         end = time.time()
         print(f"Data has been extracted in {end - start} seconds")
 
         start = time.time()
         spaces = Space.gen_spaces(academic_df)
         candidates = Subj_Candidate.gen_cand(candidate_df)
-        weights = self.gen_weights(candidate_df)
+        print(f"No. Interviews: {len(candidates)}")
+        print(f"No. Spaces: {len(spaces)}")
+        if len(spaces) < len(candidates):
+            print("There are more candidates than spaces")
+            exit()
+        weights = self.gen_weights(location_df)
         cand_copy = copy.deepcopy(candidates)
         end = time.time()
         print(f"Data objects have been generated in {end - start} seconds")
 
         start = time.time()
         self.setup_decision_variables(candidates, cand_copy, spaces)
+        end = time.time()
+        print(f"Decision variables set up in {end - start} seconds")
+        start = time.time()
         self.gen_matches(candidates, cand_copy, spaces, weights)
+        end = time.time()
+        print(f"Matches set up in {end - start} seconds")
+        start = time.time()
         self.date_constraints(candidates, spaces)
         end = time.time()
         print(f"Constraints have been generated in {end - start} seconds")
@@ -219,3 +239,7 @@ class Scheduler:
             print("Conflicts:", solver.NumConflicts())
             print("Branches:", solver.NumBranches())
             print("Wall time:", solver.WallTime())
+        time.sleep(10)
+
+scheduler = Scheduler()
+scheduler.run()

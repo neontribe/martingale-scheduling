@@ -1,42 +1,63 @@
 BEGIN:VCALENDAR
 BEGIN:VEVENT
-SUMMARY:Interview: Michael Thompson for AI Masters with Karen Young and Me
- gan Baker
-DTSTART:20251106T090000
-DTEND:20251106T120000
-DESCRIPTION:Penalties: []\, Cost: [] 
-LOCATION:Manchester
+SUMMARY:Interview: Michael Thompson for AI Masters with Sophie Thomas and 
+ Karen Young
+DTSTART:20251110T090000
+DTEND:20251110T120000
+DESCRIPTION:Total cost 5. Penalties: []\, Cost: []\, Candidate location Ex
+ eter\, Candidate specialism(s) nan\, Sophie Thomas subjects(s): AI Masters
+ \; Maths PhD\; Data Science Masters\; Data Science PhD and specialisms: {'
+ MMath': {'nan'}\, 'MPhd': {'Logic and set theory'}}\, Karen Young subjects
+ (s) AI Masters and specialisms {'MMath': {'nan'}\, 'MPhd': {'nan'}}
+LOCATION:Birmingham
 END:VEVENT
 BEGIN:VEVENT
 SUMMARY:Interview: Natalie Sanchez for Engineering PhD with Jonathan River
  a and Steven Jones
-DTSTART:20251104T090000
-DTEND:20251104T120000
-DESCRIPTION:Penalties: []\, Cost: [] 
+DTSTART:20251104T130000
+DTEND:20251104T160000
+DESCRIPTION:Total cost 5. Penalties: []\, Cost: []\, Candidate location Ba
+ th\, Candidate specialism(s) nan\, Jonathan Rivera subjects(s): Engineerin
+ g Masters\; Engineering PhD and specialisms: {'MMath': {'nan'}\, 'MPhd': {
+ 'nan'}}\, Steven Jones subjects(s) Engineering Masters\; Engineering PhD a
+ nd specialisms {'MMath': {'nan'}\, 'MPhd': {'nan'}}
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:🚨 Interview: Natalie Sanchez for Maths PhD with Steven Jones an
- d Sophie Thomas
-DTSTART:20251106T090000
-DTEND:20251106T120000
-DESCRIPTION:Penalties: []\, Cost: ['Subject mismatch'] 
+SUMMARY:Interview: Natalie Sanchez for Maths PhD with Sophie Thomas and Ka
+ ren Young
+DTSTART:20251106T130000
+DTEND:20251106T160000
+DESCRIPTION:Total cost 5. Penalties: []\, Cost: []\, Candidate location Ba
+ th\, Candidate specialism(s) {'nan'}\, Sophie Thomas subjects(s): AI Maste
+ rs\; Maths PhD\; Data Science Masters\; Data Science PhD and specialisms: 
+ {'MMath': {'nan'}\, 'MPhd': {'Logic and set theory'}}\, Karen Young subjec
+ ts(s) AI Masters and specialisms {'MMath': {'nan'}\, 'MPhd': {'nan'}}
 LOCATION:Manchester
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Natalie Sanchez for AI PhD with Megan Baker and Sarah Y
- oung
-DTSTART:20251104T130000
-DTEND:20251104T160000
-DESCRIPTION:Penalties: []\, Cost: [] 
+SUMMARY:Interview: Natalie Sanchez for AI PhD with Sarah Young and Megan B
+ aker
+DTSTART:20251103T130000
+DTEND:20251103T160000
+DESCRIPTION:Total cost 5. Penalties: []\, Cost: []\, Candidate location Ba
+ th\, Candidate specialism(s) nan\, Sarah Young subjects(s): AI PhD and spe
+ cialisms: {'MMath': {'nan'}\, 'MPhd': {'nan'}}\, Megan Baker subjects(s) M
+ aths Masters\; AI Masters\; AI PhD and specialisms {'MMath': {'Theoretical
+  Physics'}\, 'MPhd': {'nan'}}
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:🚨 Interview: Amy Hall for Maths PhD with Megan Baker and Sophie
-  Thomas
-DTSTART:20251106T130000
-DTEND:20251106T160000
-DESCRIPTION:Penalties: []\, Cost: ['Subject mismatch'] 
+SUMMARY:Interview: Amy Hall for Maths PhD with Sophie Thomas and Karen You
+ ng
+DTSTART:20251106T090000
+DTEND:20251106T120000
+DESCRIPTION:Total cost 5. Penalties: []\, Cost: []\, Candidate location De
+ rby\, Candidate specialism(s) {'Mathematical biology'}\, Sophie Thomas sub
+ jects(s): AI Masters\; Maths PhD\; Data Science Masters\; Data Science PhD
+  and specialisms: {'MMath': {'nan'}\, 'MPhd': {'Logic and set theory'}}\, 
+ Karen Young subjects(s) AI Masters and specialisms {'MMath': {'nan'}\, 'MP
+ hd': {'nan'}}
 LOCATION:Manchester
 END:VEVENT
 END:VCALENDAR

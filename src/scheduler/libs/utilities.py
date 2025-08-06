@@ -4,26 +4,36 @@ import pandas as pd
 from icalendar import Calendar, Event
 
 
-def extract_data(abs_cand_path, abs_ac_path):
+def extract_data(abs_cand_path, abs_ac_path, abs_loc_path):
     candidate_df = pd.read_excel(abs_cand_path)
     academic_df = pd.read_excel(abs_ac_path)
-    return candidate_df, academic_df
+    location_df = pd.read_excel(abs_loc_path, index_col=0)
+    return candidate_df, academic_df, location_df
 
 
 def parse_schedule(schedule_str):
-    items = schedule_str.split(';')
+    items = schedule_str.split(',')  # Changed from ';' to ',' based on your examples
     locations = []
     dates = []
+    am_pm = []
 
     for item in items:
         item = item.strip()
         if '(' in item and ')' in item:
-            date_part = item.split('(')[0].strip()
-            location = item[item.find('(') + 1: item.find(')')].strip()
+            # Split at the closing parenthesis to separate location from potential AM/PM
+            paren_end = item.find(')') + 1
+            location_part = item[:paren_end]
+            am_pm_part = item[paren_end:].strip()
+            
+            # Extract date and location from the first part
+            date_part = location_part.split('(')[0].strip()
+            location = location_part[location_part.find('(') + 1: location_part.find(')')].strip()
+            
             dates.append(date_part)
             locations.append(location)
+            am_pm.append(am_pm_part)
 
-    return dates, locations
+    return dates, locations, am_pm
 
 
 def create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg, output_file_data, output_file_clean):
@@ -37,9 +47,9 @@ def create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, co
                 if solver.Value(x[candidates[i], s]) and solver.Value(x[cand_copy[i], t]):
                     # Determine event start time
                     updated_date = s.date.replace(year=current_year)
-                    if s.time == 'morning':
+                    if s.time == 'AM':
                         start_time = datetime.combine(updated_date, datetime.strptime("09:00", "%H:%M").time())
-                    elif s.time == 'afternoon':
+                    elif s.time == 'PM':
                         start_time = datetime.combine(updated_date, datetime.strptime("13:00", "%H:%M").time())
                     else:
                         continue  # unknown time slot
@@ -73,7 +83,7 @@ def create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, co
                     event_copy.add('summary',
                                    f'Interview: {candidates[i].name} for {candidates[i].subject} with {s.interviewer} and {t.interviewer}')
                     event.add('description',
-                    f'Total cost {pair_cost}. Penalties: {pair_err}, Cost: {cost_msg[(candidates[i],s)]}, Candidate location {candidates[i].address}, Candidate specialism(s) {candidates[i].specialism}, {s.interviewer} subjects(s): {s.subjects} and specialisms: {s.specialisms}, {t.interviewer} subjects(s) {t.subjects} and specialisms {t.specialisms}')
+                    f'Total cost {pair_cost}. Penalties: {pair_err}, Cost: {cost_msg[(candidates[i],s)]}, Candidate location {candidates[i].address}, Candidate specialism(s) {candidates[i].specialisms}, {s.interviewer} subjects(s): {s.subjects} and specialisms: {s.specialisms}, {t.interviewer} subjects(s) {t.subjects} and specialisms {t.specialisms}')
                     event.add('dtstart', start_time)
                     event_copy.add('dtstart', start_time)
                     event.add('dtend', start_time + timedelta(hours=3)) 
