@@ -1,12 +1,17 @@
 import copy
-import random
+import time
+from pathlib import Path
+import sys
 
 from ortools.sat.python import cp_model
 from collections import defaultdict
 
-from .libs.classes import Space, Subj_Candidate
-from .libs.utilities import extract_data, create_calendar
+#from src.scheduler.libs.classes import Space, Subj_Candidate
 
+# from src.scheduler.libs.utilities import extract_data, create_calendar
+
+from libs.utilities import extract_data, create_calendar
+from libs.classes import Space, Subj_Candidate
 
 class Scheduler:
     def __init__(self):
@@ -16,6 +21,7 @@ class Scheduler:
         self.cost = {}
         self.pen_dict = defaultdict(list)
         self.cost_msg = defaultdict(list)
+        
 
     def gen_matches(self, candidates, cand_copy, spaces, weights):
         """Finds suitable matches between candidate objects and spaces by accessing the relevant attributes.
@@ -43,54 +49,159 @@ class Scheduler:
                 self.cost[(c, s)] = weights[(c.address, s.location)]
                 self.cost[(cand_copy[idx], s)] = weights[(cand_copy[idx].address, s.location)]
 
-                # do the courses match?
-                if c.subject in s.subjects:
-                    # do the availabilities match?
-                    if s.datestr in c.avail:
-                        if ("Masters" in str(c.subject)) and (str(c.specialisms) not in str(s.specialisms["MMath"])) and (str(c.specialisms) != "nan"):
-                            # if c assigned to s, then c duplicate must be assigned to something with the same specialism
-                            copy_special = str(cand_copy[idx].specialisms)
-                            for t in spaces:
-                                if (s != t) and (copy_special not in str(t.specialisms["MMath"])):
-                                    penalty = self.model.NewBoolVar(f"penalty1_{c}_{cand_copy[idx]}_{s}_{t}")
-                                    # trigger penalty if both x[c1,s1] and x[c2,s2] are true
-                                    self.model.Add(penalty >= self.x[c, s] + self.x[cand_copy[idx], t] - 1)
-                                    self.penalties.append((penalty, 10000))
-                                    self.pen_dict[(c, s)].append((cand_copy[idx], t, 10000, f"Masters specialism mismatch: c: {c.specialisms}, s1: {s.specialisms['MMath']}, s2: {t.specialisms['MMath']}"))
-                        if ("Phd" in str(c.subject)) and (str(c.specialisms) not in str(s.specialisms["MPhd"])) and (str(c.specialisms) != "nan"):
-                            # if c assigned to s, then c duplicate must be assigned to something with the same specialism
-                            copy_special = str(cand_copy[idx].specialisms)
-                            for t in spaces:
-                                if (s != t) and (copy_special not in str(t.specialisms["MPhd"])):
-                                    penalty = self.model.NewBoolVar(f"penalty2_{c}_{cand_copy[idx]}_{s}_{t}")
-                                    # trigger penalty if both x[c1,s1] and x[c2,s2] are true
-                                    self.model.Add(penalty >= self.x[c, s] + self.x[cand_copy[idx], t] - 1)
-                                    self.penalties.append((penalty, 10000))
-                                    self.pen_dict[(c, s)].append((cand_copy[idx], t, 10000, f"Phd specialism mismatch: c: {c.specialisms}, s1: {s.specialisms['MPhd']}, s2: {t.specialisms['MPhd']}"))
-                    else:
+                # do the courses and availabilities match?
+                if (c.subject in s.subjects) and (s.datestr in c.avail):
+                    c_special = set(c.specialisms)
+                    if ("Masters" in str(c.subject)) and (c_special.intersection(s.specialisms["MMath"]) == set()) and (str(c.specialisms) != "nan"):
+                        # if c assigned to s, then c duplicate must be assigned to something with the same specialism
+                        copy_special = set(cand_copy[idx].specialisms)
+                        for t in spaces:
+                            if (s != t) and (copy_special.intersection(t.specialisms["MMath"]) == set()):
+                                penalty = self.model.NewBoolVar(f"penalty1_{c}_{cand_copy[idx]}_{s}_{t}")
+                                # trigger penalty if both x[c1,s1] and x[c2,s2] are true
+                                self.model.Add(penalty >= self.x[c, s] + self.x[cand_copy[idx], t] - 1)
+                                self.penalties.append((penalty, 10000))
+                                self.pen_dict[(c, s)].append((cand_copy[idx], t, 10000, f"Masters specialism mismatch: c: {c.specialisms}, s1: {s.specialisms['MMath']}, s2: {t.specialisms['MMath']}"))
+                    if ("Phd" in str(c.subject)) and (c_special.intersection(s.specialisms["MPhd"]) == set()) and (str(c.specialisms) != "nan"):
+                        # if c assigned to s, then c duplicate must be assigned to something with the same specialism
+                        for t in spaces:
+                            if (s != t) and (copy_special.intersection(t.specialisms["MPhd"]) == set()):
+                                penalty = self.model.NewBoolVar(f"penalty2_{c}_{cand_copy[idx]}_{s}_{t}")
+                                # trigger penalty if both x[c1,s1] and x[c2,s2] are true
+                                self.model.Add(penalty >= self.x[c, s] + self.x[cand_copy[idx], t] - 1)
+                                self.penalties.append((penalty, 10000))
+                                self.pen_dict[(c, s)].append((cand_copy[idx], t, 10000, f"Phd specialism mismatch: c: {c.specialisms}, s1: {s.specialisms['MPhd']}, s2: {t.specialisms['MPhd']}"))
+                if (s.datestr not in c.avail):
                         # if the availabilities don't match, want this to be unfavourable
                         self.cost[(c, s)] += 10000
                         self.cost[(cand_copy[idx], s)] += 10000
                         self.cost_msg[(c, s)].append("Avail mismatch")
                         self.cost_msg[(cand_copy[idx], s)].append("Avail mismatch")
-                else:
+                if (c.subject not in s.subjects):
                     # if the subjects don't match, want this to be very unfavourable
                     self.cost[(c, s)] += 1000000
                     self.cost[(cand_copy[idx], s)] += 1000000
                     self.cost_msg[(c, s)].append("Subject mismatch")
                     self.cost_msg[(cand_copy[idx], s)].append("Subject mismatch")
             idx += 1
+    def gen_matches_alt(self, candidates, cand_copy, spaces, weights):
+        # Precompute space lookups to avoid repeated iterations
+        space_groups = {}  # key: (location, date, time), value: list of spaces
+        for space in spaces:
+            key = (space.location, space.date, space.time)
+            if key not in space_groups:
+                space_groups[key] = []
+            space_groups[key].append(space)
+        
+        # Precompute subject and availability compatibility
+        compatible_pairs = set()
+        for i, c in enumerate(candidates):
+            for s in spaces:
+                if (c.subject in s.subjects) and (s.datestr in c.avail):
+                    compatible_pairs.add((i, s))
+        
+        # Process each candidate-space pair
+        for idx, c in enumerate(candidates):
+            cand_copy_candidate = cand_copy[idx]
+            
+            for s in spaces:
+                # Calculate costs upfront
+                base_cost_c = weights.get((c.address, s.location), 0)
+                base_cost_copy = weights.get((cand_copy_candidate.address, s.location), 0)
+                
+                # Check basic compatibility
+                is_compatible = (idx, s) in compatible_pairs
+                
+                if not is_compatible:
+                    # Apply heavy penalties for incompatible pairs
+                    if s.datestr not in c.avail:
+                        base_cost_c += 10000
+                        base_cost_copy += 10000
+                        self.cost_msg[(c, s)].append("Avail mismatch")
+                        self.cost_msg[(cand_copy_candidate, s)].append("Avail mismatch")
+                    
+                    if c.subject not in s.subjects:
+                        base_cost_c += 1000000
+                        base_cost_copy += 1000000
+                        self.cost_msg[(c, s)].append("Subject mismatch")
+                        self.cost_msg[(cand_copy_candidate, s)].append("Subject mismatch")
+                
+                # Set costs
+                self.cost[(c, s)] = base_cost_c
+                self.cost[(cand_copy_candidate, s)] = base_cost_copy
+                
+                # Handle copy constraints - only for compatible pairs
+                if is_compatible:
+                    self._add_copy_constraints(c, cand_copy_candidate, s, space_groups)
+                    self._add_specialism_penalties(c, cand_copy_candidate, s, spaces)
 
-    def gen_weights(self, candidate_df):
+    def _add_copy_constraints(self, c, cand_copy_candidate, s, space_groups):
+        """Add constraints ensuring copy candidate is matched to same time/date/location."""
+        copy_con = self.model.NewBoolVar("copy_con")
+        self.model.Add(copy_con == 1)
+        
+        # Find allowed spaces for the copy (same location, date, time, different interviewer)
+        key = (s.location, s.date, s.time)
+        allowed_spaces = []
+        if key in space_groups:
+            allowed_spaces = [t for t in space_groups[key] if t.interviewer != s.interviewer]
+        
+        # All other spaces are disallowed
+        disallowed = [t for t in self.spaces if t not in allowed_spaces and t != s]
+        
+        if disallowed:
+            self.model.AddBoolAnd([self.x[cand_copy_candidate, t].Not() for t in disallowed]).OnlyEnforceIf(self.x[c, s])
+
+    def _add_specialism_penalties(self, c, cand_copy_candidate, s, spaces):
+        """Add penalties for specialism mismatches - optimized version."""
+        c_special = set(c.specialisms) if str(c.specialisms) != "nan" else set()
+        copy_special = set(cand_copy_candidate.specialisms) if str(cand_copy_candidate.specialisms) != "nan" else set()
+        
+        # Masters specialism check
+        if ("Masters" in str(c.subject)) and c_special and (c_special.intersection(s.specialisms.get("MMath", set())) == set()):
+            self._add_specialism_penalty_batch(c, cand_copy_candidate, s, spaces, copy_special, "MMath", "Masters", 1)
+        
+        # PhD specialism check  
+        if ("Phd" in str(c.subject)) and c_special and (c_special.intersection(s.specialisms.get("MPhd", set())) == set()):
+            self._add_specialism_penalty_batch(c, cand_copy_candidate, s, spaces, copy_special, "MPhd", "Phd", 2)
+
+    def _add_specialism_penalty_batch(self, c, cand_copy_candidate, s, spaces, copy_special, spec_key, degree_type, penalty_id):
+        """Batch process specialism penalties to reduce constraint creation."""
+        # Find all spaces where copy candidate would violate specialism requirements
+        violating_spaces = []
+        for t in spaces:
+            if (s != t) and copy_special and (copy_special.intersection(t.specialisms.get(spec_key, set())) == set()):
+                violating_spaces.append(t)
+        
+        # Create a single penalty variable for this batch
+        if violating_spaces:
+            penalty = self.model.NewBoolVar(f"penalty{penalty_id}_{id(c)}_{id(cand_copy_candidate)}_{id(s)}")
+            
+            # Penalty is triggered if c is assigned to s AND copy is assigned to any violating space
+            penalty_sum = [self.x[cand_copy_candidate, t] for t in violating_spaces]
+            if penalty_sum:
+                self.model.Add(penalty >= self.x[c, s] + sum(penalty_sum) - len(penalty_sum))
+                self.penalties.append((penalty, 10000))
+                
+                # Add to penalty dictionary for debugging
+                for t in violating_spaces:
+                    self.pen_dict[(c, s)].append(
+                        (cand_copy_candidate, t, 10000, 
+                         f"{degree_type} specialism mismatch: c: {c.specialisms}, s1: {s.specialisms.get(spec_key, set())}, s2: {t.specialisms.get(spec_key, set())}")
+                    )
+    def gen_weights(self,df):
         """Creates a dictionary of weights between cities
         Currently generates this randomly"""
+        
         weights = {}
-        c_cities = candidate_df.iloc[6]
-        s_cities = ["London", "Manchester", "Birmingham"]
-        for i in range(0, len(c_cities)):
-            for j in range(0, len(s_cities)):
-                # at the moment I am just generating random weights
-                weights[(c_cities.iloc[i], s_cities[j])] = random.randint(1, 10)
+        
+        # Iterate through the DataFrame
+        for termtime_city in df.index:
+            for interview_location in df.columns:
+                weight_value = df.loc[termtime_city, interview_location]
+                # Convert to integer and store with tuple key
+                weights[(termtime_city, interview_location)] = int(weight_value)
+        
         return weights
 
 
@@ -149,16 +260,50 @@ class Scheduler:
                 self.x[c, s] = self.model.NewBoolVar(f'x[{c}][{s}]')
 
     def run(self):
-        candidate_df, academic_df = extract_data()
+        print("Please be patient, this may take a few minutes")
+        start = time.time()
+        # If frozen (compiled with PyInstaller), use the executable's path
+        if getattr(sys, 'frozen', False):
+            base_path = Path(sys._MEIPASS).parents[4]  # or Path(sys.executable).parent
+        else:
+            base_path = Path(__file__).parents[2]
+        rel_cand_path = Path("./data/scholarship_candidates.xlsx")
+        rel_ac_path = Path("./data/academic_assessors_35.xlsx")
+        rel_loc_path = Path("./data/Locations.xlsx")
+        abs_cand_path = (base_path / rel_cand_path).resolve()
+        abs_ac_path = (base_path / rel_ac_path).resolve()
+        abs_loc_path = (base_path / rel_loc_path).resolve()
+        candidate_df, academic_df, location_df = extract_data(abs_cand_path, abs_ac_path, abs_loc_path)
+        end = time.time()
+        print(f"Data has been extracted in {end - start} seconds")
+
+        start = time.time()
         spaces = Space.gen_spaces(academic_df)
-        candidates, _ = Subj_Candidate.gen_cand(candidate_df)
-        weights = self.gen_weights(candidate_df)
+        candidates = Subj_Candidate.gen_cand(candidate_df)
+        print(f"No. Interviews: {len(candidates)}")
+        print(f"No. Spaces: {len(spaces)}")
+        if len(spaces) < len(candidates):
+            print("There are more candidates than spaces")
+            exit()
+        weights = self.gen_weights(location_df)
         cand_copy = copy.deepcopy(candidates)
+        end = time.time()
+        print(f"Data objects have been generated in {end - start} seconds")
 
+        start = time.time()
         self.setup_decision_variables(candidates, cand_copy, spaces)
-        self.gen_matches(candidates, cand_copy, spaces, weights)
+        end = time.time()
+        print(f"Decision variables set up in {end - start} seconds")
+        start = time.time()
+        self.gen_matches_alt(candidates, cand_copy, spaces, weights)
+        end = time.time()
+        print(f"Matches set up in {end - start} seconds")
+        start = time.time()
         self.date_constraints(candidates, spaces)
+        end = time.time()
+        print(f"Constraints have been generated in {end - start} seconds")
 
+        start = time.time()
         all_cand = candidates + cand_copy
 
         # Each candidate assigned to exactly one space
@@ -174,18 +319,31 @@ class Scheduler:
             sum(self.cost[c, s] * self.x[c, s] for c in all_cand for s in spaces) +
             sum(weight * p for (p, weight) in self.penalties)
         )
+        end = time.time()
+        print(f"Final set up completed in {end - start} seconds. Now solving...")
 
         # Solve
+        start = time.time()
         solver = cp_model.CpSolver()
-        status = solver.Solve(self.model)
-        solver.parameters.max_time_in_seconds = 60.0
+        solver.parameters.max_time_in_seconds = 60
 
+        status = solver.Solve(self.model)
+        end = time.time()
         if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]:
             # create and store a calendar file
-            create_calendar(candidates, cand_copy, spaces, solver, self.x, self.cost, self.pen_dict, self.cost_msg)
+            print(f"Solution generated in {end - start} seconds. Now generating calendar...")
+            output_data_rel_path  = Path("./output/data_interviews.ics")
+            output_clean_rel_path = Path("./output/clean_interviews.ics")
+            output_file_data = (base_path / output_data_rel_path).resolve()
+            output_file_clean = (base_path / output_clean_rel_path).resolve()
+            create_calendar(candidates, cand_copy, spaces, solver, self.x, self.cost, self.pen_dict, self.cost_msg, output_file_data, output_file_clean)
         else:
             print("No feasible solution found.")
             print("Status:", solver.StatusName())
             print("Conflicts:", solver.NumConflicts())
             print("Branches:", solver.NumBranches())
             print("Wall time:", solver.WallTime())
+        time.sleep(10)
+
+scheduler = Scheduler()
+scheduler.run()

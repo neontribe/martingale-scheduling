@@ -1,5 +1,6 @@
 from datetime import datetime
 
+#from src.scheduler.libs.utilities import parse_schedule
 from .utilities import parse_schedule
 
 
@@ -24,22 +25,29 @@ class Space:
             # extracting cells from interviewer column in dataframe
             avail = df[col].iloc[2]
             subjects = df[col].iloc[3]
-            specialisms = {"MMath": df[col].iloc[4], "MPhd": df[col].iloc[5]}
+            
+            mmath = str((df[col].iloc[4])).split(";")
+            for i in range (0, len(mmath)):
+                mmath[i] = mmath[i].strip()
+
+            mphd = str((df[col].iloc[5])).split(";")
+            for i in range (0, len(mphd)):
+                mphd[i] = mphd[i].strip()
+
+            mmath = set(mmath)
+            mphd = set(mphd)
+            specialisms = {"MMath": mmath, "MPhd": mphd}
             interviewer = df[col].iloc[0]
             # separating out the dates and corresponding locations from availability cell
 
-            dates, locations = parse_schedule(avail)
+            dates, locations, am_pm = parse_schedule(avail)
 
             for i in range(0, len(dates)):  # for every date interviewer is available
 
                 # create 2 new spaces (am/pm) for each date in the avail list
                 date_obj = datetime.strptime(dates[i], date_format)  # create date object for ease of date arithmetic
-                morning_space = Space(date_obj, dates[i], "morning", locations[i], specialisms, subjects, interviewer)
-                afternoon_space = Space(date_obj, dates[i], "afternoon", locations[i], specialisms, subjects,
-                                        interviewer)
-                spaces.append(morning_space)
-                spaces.append(afternoon_space)
-
+                space = Space(date_obj, dates[i], am_pm[i], locations[i], specialisms, subjects, interviewer)
+                spaces.append(space)
         return spaces
 
 
@@ -61,36 +69,49 @@ class Subj_Candidate:
         for col in df:  # for every interviewee
 
             # extracting data from interviewee column in dataframe
-            name = df[col].iloc[3]
-            avail = df[col].iloc[5]
-            address = df[col].iloc[6]
-            mast_subjects = str(df[col].iloc[7]).split(';')
-            phd_subjects = str(df[col].iloc[8]).split(';')
-            specialisms = {"MMath": df[col].iloc[9], "MPhd": df[col].iloc[10]}
+            name = df[col].iloc[1]
+            avail = df[col].iloc[2]
+            avail_list = []
+            dates, locations, am_pm = parse_schedule(avail)
+            for i in range (0, len(dates)):
+                avail_list.append(dates[i] + ' ' + am_pm[i])
+            address = df[col].iloc[3]
+            mast_subjects = str(df[col].iloc[4]).split(',')
+            for i in range (0, len(mast_subjects)):
+                mast_subjects[i] = mast_subjects[i].strip()
 
-            ME_cand = []  # list of candidate objects belonging to this interviewee
+            phd_subjects = str(df[col].iloc[5]).split(',')
+            for i in range (0, len(phd_subjects)):
+                phd_subjects[i] = phd_subjects[i].strip()
+                
+            mmath = str((df[col].iloc[6])).split(",")
+            for i in range (0, len(mmath)):
+                mmath[i] = mmath[i].strip()
+
+            mphd = str((df[col].iloc[7])).split(",")
+            for i in range (0, len(mphd)):
+                mphd[i] = mphd[i].strip()
+            mmath = set(mmath)
+            mphd = set(mphd)
 
             for ele in mast_subjects:  # for every masters course being interviewed for
                 if (ele != "nan") and (name != "Name"):
                     course = ele + " Masters"
                     if ele == "Maths":
-                        specialism = specialisms["MMath"]
+                        specialism = mmath
                     else:
                         specialism = "nan"
-                    subj_cand = Subj_Candidate(name, avail, address, specialism, course)
+                    subj_cand = Subj_Candidate(name, avail_list, address, specialism, course)
                     candidates.append(subj_cand)
-                    ME_cand.append(subj_cand)
 
             for ele in phd_subjects:  # for every phd course being interviewed for
                 if ele != "nan" and (name != "Name"):
                     course = ele + " PhD"
                     if ele == "Maths":
-                        specialism = specialisms["MPhd"]
+                        specialism = mphd
                     else:
                         specialism = "nan"
-                    subj_cand = Subj_Candidate(name, avail, address, specialism, course)
+                    subj_cand = Subj_Candidate(name, avail_list, address, specialism, course)
                     candidates.append(subj_cand)
-                    ME_cand.append(subj_cand)
-
-            ME_all_cand.append(ME_cand)  # ME_cand elements all belong to same interviewee
-        return candidates, ME_all_cand
+                                
+        return candidates

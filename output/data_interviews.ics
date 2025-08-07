@@ -1,0 +1,325 @@
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+SUMMARY:⚠️ Interview: Jason Kim for Maths Masters with Dr. Nicole Whit
+ e and Prof. Dominic Powell
+DTSTART:20251104T130000
+DTEND:20251104T160000
+DESCRIPTION:Total cost 10000. Penalties: []\, Cost: ['Avail mismatch']\, C
+ andidate location London\, Candidate specialism(s) {'Pure'\, 'Theoretical 
+ Physics'\, 'Applied'}\, Dr. Nicole White subjects(s): Maths PhD\, Maths Ma
+ sters and specialisms: {'MMath': {'Theoretical Physics\, Pure\, Applied'}\
+ , 'MPhd': {'Mathematical or theoretical physics\, Statistics'}}\, Prof. Do
+ minic Powell subjects(s) Maths PhD\, Maths Masters\, AI PhD and specialism
+ s {'MMath': {'Applied\, Pure\, Theoretical Physics'}\, 'MPhd': {'Probabili
+ ty\, Mathematical or theoretical physics\, High energy physics\, general r
+ elativity and cosmology'}}
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🚨 Interview: Maria Sanders for Maths PhD with Prof. David Kumar
+  and Prof. Sebastian Gray
+DTSTART:20251113T090000
+DTEND:20251113T120000
+DESCRIPTION:Total cost 1010220. Penalties: []\, Cost: ['Avail mismatch'\, 
+ 'Subject mismatch']\, Candidate location Manchester\, Candidate specialism
+ (s) {'Probability'\, 'Numerical analysis and scientific computing'\, 'Nonl
+ inear systems'\, 'Continuum Mechanics'}\, Prof. David Kumar subjects(s): M
+ aths Masters and specialisms: {'MMath': {'Applied\, Pure'}\, 'MPhd': {'nan
+ '}}\, Prof. Sebastian Gray subjects(s) Maths PhD\, Maths Masters\, Enginee
+ ring PhD\, AI PhD and specialisms {'MMath': {'Applied\, Pure'}\, 'MPhd': {
+ 'Logic and set theory\, Mathematical or theoretical physics\, Nonlinear sy
+ stems'}}
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🚨 Interview: Benjamin Brooks for Maths PhD with Dr. Sarah Mitch
+ ell and Prof. Sebastian Gray
+DTSTART:20251113T130000
+DTEND:20251113T160000
+DESCRIPTION:Total cost 1010292. Penalties: []\, Cost: ['Avail mismatch'\, 
+ 'Subject mismatch']\, Candidate location Birmingham\, Candidate specialism
+ (s) {'Probability'}\, Dr. Sarah Mitchell subjects(s): Maths Masters\, AI M
+ asters\, AI PhD and specialisms: {'MMath': {'Applied'}\, 'MPhd': {'nan'}}\
+ , Prof. Sebastian Gray subjects(s) Maths PhD\, Maths Masters\, Engineering
+  PhD\, AI PhD and specialisms {'MMath': {'Applied\, Pure'}\, 'MPhd': {'Log
+ ic and set theory\, Mathematical or theoretical physics\, Nonlinear system
+ s'}}
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:⚠️ Interview: Jerry Patel for Maths PhD with Prof. Julian Ward
+  and Dr. Rachel Green
+DTSTART:20251113T130000
+DTEND:20251113T160000
+DESCRIPTION:Total cost 10222. Penalties: []\, Cost: ['Avail mismatch']\, C
+ andidate location Leeds\, Candidate specialism(s) {'Geometry and topology'
+ }\, Prof. Julian Ward subjects(s): Maths PhD\, Maths Masters\, AI Masters\
+ , Engineering PhD and specialisms: {'MMath': {'Pure\, Applied\, Theoretica
+ l Physics'}\, 'MPhd': {'Analysis\, Numerical analysis and scientific compu
+ ting'}}\, Dr. Rachel Green subjects(s) Maths PhD\, Maths Masters\, AI Mast
+ ers and specialisms {'MMath': {'Theoretical Physics'}\, 'MPhd': {'Number t
+ heory\, Combinatorics'}}
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:⚠️ Interview: Patrick Lewis for Engineering PhD with Prof. Pet
+ er Walsh and Prof. Robert Smith
+DTSTART:20251113T090000
+DTEND:20251113T120000
+DESCRIPTION:Total cost 10222. Penalties: []\, Cost: ['Avail mismatch']\, C
+ andidate location Liverpool\, Candidate specialism(s) nan\, Prof. Peter Wa
+ lsh subjects(s): Maths Masters\, Engineering PhD and specialisms: {'MMath'
+ : {'Theoretical Physics\, Pure'}\, 'MPhd': {'nan'}}\, Prof. Robert Smith s
+ ubjects(s) Engineering PhD\, Maths Masters and specialisms {'MMath': {'App
+ lied\, Theoretical Physics'}\, 'MPhd': {'nan'}}
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🚨 Interview: Rachel Hernandez for AI Masters with Dr. Hannah Cl
+ arke and Prof. Benjamin Hughes
+DTSTART:20251111T130000
+DTEND:20251111T160000
+DESCRIPTION:Total cost 1010145. Penalties: []\, Cost: ['Avail mismatch'\, 
+ 'Subject mismatch']\, Candidate location Newcastle\, Candidate specialism(
+ s) nan\, Dr. Hannah Clarke subjects(s): Maths Masters and specialisms: {'M
+ Math': {'Applied\, Pure\, Theoretical Physics'}\, 'MPhd': {'nan'}}\, Prof.
+  Benjamin Hughes subjects(s) Maths Masters and specialisms {'MMath': {'The
+ oretical Physics'}\, 'MPhd': {'nan'}}
+LOCATION:Manchester
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:⚠️ Interview: Edward Ramirez for Maths Masters with Prof. Rich
+ ard Evans and Dr. Isabella King
+DTSTART:20251110T090000
+DTEND:20251110T120000
+DESCRIPTION:Total cost 10000. Penalties: []\, Cost: ['Avail mismatch']\, C
+ andidate location Bristol\, Candidate specialism(s) {'Pure'\, 'Theoretical
+  Physics'\, 'Applied'}\, Prof. Richard Evans subjects(s): Maths PhD\, Math
+ s Masters and specialisms: {'MMath': {'Pure\, Theoretical Physics\, Applie
+ d'}\, 'MPhd': {'Mathematical biology\, Logic and set theory'}}\, Dr. Isabe
+ lla King subjects(s) Maths Masters\, AI Masters\, Engineering PhD and spec
+ ialisms {'MMath': {'Pure'}\, 'MPhd': {'nan'}}
+LOCATION:Bristol
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:⚠️ Interview: Jennifer Jackson for Maths Masters with Prof. Be
+ njamin Hughes and Prof. Steven Anderson
+DTSTART:20251113T090000
+DTEND:20251113T120000
+DESCRIPTION:Total cost 10121. Penalties: []\, Cost: ['Avail mismatch']\, C
+ andidate location Newcastle\, Candidate specialism(s) {'Pure'\, 'Theoretic
+ al Physics'\, 'Applied'}\, Prof. Benjamin Hughes subjects(s): Maths Master
+ s and specialisms: {'MMath': {'Theoretical Physics'}\, 'MPhd': {'nan'}}\, 
+ Prof. Steven Anderson subjects(s) Maths Masters and specialisms {'MMath': 
+ {'Applied\, Pure'}\, 'MPhd': {'nan'}}
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:⚠️ Interview: Jennifer Jackson for AI Masters with Prof. Micha
+ el Thompson and Dr. Amanda Taylor
+DTSTART:20251104T090000
+DTEND:20251104T120000
+DESCRIPTION:Total cost 10289. Penalties: []\, Cost: ['Avail mismatch']\, C
+ andidate location Newcastle\, Candidate specialism(s) nan\, Prof. Michael 
+ Thompson subjects(s): Maths PhD\, Maths Masters\, AI Masters and specialis
+ ms: {'MMath': {'Pure\, Applied\, Theoretical Physics'}\, 'MPhd': {'High en
+ ergy physics\, general relativity and cosmology'}}\, Dr. Amanda Taylor sub
+ jects(s) AI PhD and specialisms {'MMath': {'nan'}\, 'MPhd': {'nan'}}
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:⚠️ Interview: Sarah Hernandez for Maths Masters with Prof. Tho
+ mas Moore and Dr. Jennifer Lopez
+DTSTART:20251106T090000
+DTEND:20251106T120000
+DESCRIPTION:Total cost 10405. Penalties: []\, Cost: ['Avail mismatch']\, C
+ andidate location Edinburgh\, Candidate specialism(s) {'Pure'\, 'Applied'}
+ \, Prof. Thomas Moore subjects(s): Maths PhD\, Maths Masters\, AI Masters 
+ and specialisms: {'MMath': {'Applied\, Pure\, Theoretical Physics'}\, 'MPh
+ d': {'High energy physics\, general relativity and cosmology\, Mathematica
+ l or theoretical physics\, Statistics'}}\, Dr. Jennifer Lopez subjects(s) 
+ AI PhD and specialisms {'MMath': {'nan'}\, 'MPhd': {'nan'}}
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🚨 Interview: Olivia Howard for Engineering PhD with Dr. Amanda 
+ Taylor and Dr. Maria Rodriguez
+DTSTART:20251103T130000
+DTEND:20251103T160000
+DESCRIPTION:Total cost 1010403. Penalties: []\, Cost: ['Avail mismatch'\, 
+ 'Subject mismatch']\, Candidate location Glasgow\, Candidate specialism(s)
+  nan\, Dr. Amanda Taylor subjects(s): Maths Masters and specialisms: {'MMa
+ th': {'Pure\, Applied\, Theoretical Physics'}\, 'MPhd': {'nan'}}\, Dr. Mar
+ ia Rodriguez subjects(s) Engineering PhD\, Maths Masters\, AI PhD and spec
+ ialisms {'MMath': {'Theoretical Physics\, Pure\, Applied'}\, 'MPhd': {'nan
+ '}}
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🚨 Interview: Emma Gray for Maths Masters with Prof. Daniel Wils
+ on and Dr. Victoria Singh
+DTSTART:20251114T130000
+DTEND:20251114T160000
+DESCRIPTION:Total cost 1010303. Penalties: []\, Cost: ['Avail mismatch'\, 
+ 'Subject mismatch']\, Candidate location Nottingham\, Candidate specialism
+ (s) {'Pure'\, 'Applied'}\, Prof. Daniel Wilson subjects(s): Biomedicine Ph
+ D and specialisms: {'MMath': {'nan'}\, 'MPhd': {'nan'}}\, Dr. Victoria Sin
+ gh subjects(s) Maths Masters\, AI PhD and specialisms {'MMath': {'Pure\, A
+ pplied'}\, 'MPhd': {'nan'}}
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🚨 Interview: Jack Cruz for AI Masters with Prof. Andrew Davis a
+ nd Dr. Sarah Mitchell
+DTSTART:20251114T130000
+DTEND:20251114T160000
+DESCRIPTION:Total cost 1010369. Penalties: []\, Cost: ['Avail mismatch'\, 
+ 'Subject mismatch']\, Candidate location Oxford\, Candidate specialism(s) 
+ nan\, Prof. Andrew Davis subjects(s): Maths PhD\, Maths Masters and specia
+ lisms: {'MMath': {'Applied\, Theoretical Physics'}\, 'MPhd': {'Statistics\
+ , Analysis\, Mathematical biology'}}\, Dr. Sarah Mitchell subjects(s) Math
+ s Masters\, AI Masters\, AI PhD and specialisms {'MMath': {'Applied'}\, 'M
+ Phd': {'nan'}}
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🚨 Interview: Jack Cruz for Maths PhD with Dr. Amanda Taylor and
+  Prof. Sebastian Gray
+DTSTART:20251111T130000
+DTEND:20251111T160000
+DESCRIPTION:Total cost 1010163. Penalties: []\, Cost: ['Avail mismatch'\, 
+ 'Subject mismatch']\, Candidate location Oxford\, Candidate specialism(s) 
+ {'Combinatorics'\, 'Number theory'\, 'Algebra'}\, Dr. Amanda Taylor subjec
+ ts(s): Maths Masters and specialisms: {'MMath': {'Pure\, Applied\, Theoret
+ ical Physics'}\, 'MPhd': {'nan'}}\, Prof. Sebastian Gray subjects(s) Maths
+  PhD\, Maths Masters\, Engineering PhD\, AI PhD and specialisms {'MMath': 
+ {'Applied\, Pure'}\, 'MPhd': {'Logic and set theory\, Mathematical or theo
+ retical physics\, Nonlinear systems'}}
+LOCATION:Manchester
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:⚠️ Interview: Ashley Kelly for Maths Masters with Dr. Victoria
+  Singh and Prof. Simon Foster
+DTSTART:20251107T090000
+DTEND:20251107T120000
+DESCRIPTION:Total cost 10000. Penalties: []\, Cost: ['Avail mismatch']\, C
+ andidate location London\, Candidate specialism(s) {'Pure'}\, Dr. Victoria
+  Singh subjects(s): Maths Masters\, AI PhD and specialisms: {'MMath': {'Pu
+ re\, Applied'}\, 'MPhd': {'nan'}}\, Prof. Simon Foster subjects(s) Maths P
+ hD\, Maths Masters and specialisms {'MMath': {'Pure\, Applied'}\, 'MPhd': 
+ {'Continuum Mechanics\, Geometry and topology'}}
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:⚠️ Interview: Sandra Adams for Engineering PhD with Prof. Bria
+ n Thompson and Prof. Daniel Wilson
+DTSTART:20251104T090000
+DTEND:20251104T120000
+DESCRIPTION:Total cost 10200. Penalties: []\, Cost: ['Avail mismatch']\, C
+ andidate location Manchester\, Candidate specialism(s) nan\, Prof. Brian T
+ hompson subjects(s): Maths PhD\, Maths Masters\, AI Masters\, Engineering 
+ PhD and specialisms: {'MMath': {'Theoretical Physics\, Pure\, Applied'}\, 
+ 'MPhd': {'Combinatorics\, High energy physics\, general relativity and cos
+ mology\, Number theory'}}\, Prof. Daniel Wilson subjects(s) Maths PhD\, Ma
+ ths Masters\, AI Masters and specialisms {'MMath': {'Theoretical Physics\,
+  Pure\, Applied'}\, 'MPhd': {'Mathematical or theoretical physics\, Geomet
+ ry and topology\, Numerical analysis and scientific computing'}}
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🚨 Interview: Shirley Diaz for Engineering PhD with Dr. Stephani
+ e Jones and Prof. Richard Evans
+DTSTART:20251110T090000
+DTEND:20251110T120000
+DESCRIPTION:Total cost 1010097. Penalties: []\, Cost: ['Avail mismatch'\, 
+ 'Subject mismatch']\, Candidate location Birmingham\, Candidate specialism
+ (s) nan\, Dr. Stephanie Jones subjects(s): Maths Masters\, AI Masters and 
+ specialisms: {'MMath': {'Pure\, Applied'}\, 'MPhd': {'nan'}}\, Prof. Richa
+ rd Evans subjects(s) Maths PhD\, Maths Masters and specialisms {'MMath': {
+ 'Pure\, Theoretical Physics\, Applied'}\, 'MPhd': {'Mathematical biology\,
+  Logic and set theory'}}
+LOCATION:Bristol
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🚨 Interview: Joshua Nguyen for Maths PhD with Dr. Emma Watson a
+ nd Dr. Sarah Mitchell
+DTSTART:20251104T090000
+DTEND:20251104T120000
+DESCRIPTION:Total cost 1010196. Penalties: []\, Cost: ['Avail mismatch'\, 
+ 'Subject mismatch']\, Candidate location Leeds\, Candidate specialism(s) {
+ 'High energy physics'\, 'Nonlinear systems'\, 'general relativity and cosm
+ ology'}\, Dr. Emma Watson subjects(s): Maths Masters\, AI Masters and spec
+ ialisms: {'MMath': {'Theoretical Physics\, Applied'}\, 'MPhd': {'nan'}}\, 
+ Dr. Sarah Mitchell subjects(s) Engineering PhD\, Maths Masters and special
+ isms {'MMath': {'Theoretical Physics\, Applied\, Pure'}\, 'MPhd': {'nan'}}
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:⚠️ Interview: Patrick Rivera for Maths Masters with Dr. Emily 
+ Chen and Prof. Michael Thompson
+DTSTART:20251113T090000
+DTEND:20251113T120000
+DESCRIPTION:Total cost 10222. Penalties: []\, Cost: ['Avail mismatch']\, C
+ andidate location Liverpool\, Candidate specialism(s) {'Pure'\, 'Applied'}
+ \, Dr. Emily Chen subjects(s): Maths Masters and specialisms: {'MMath': {'
+ Pure'}\, 'MPhd': {'nan'}}\, Prof. Michael Thompson subjects(s) Maths PhD\,
+  Maths Masters\, AI Masters\, Engineering PhD\, AI PhD and specialisms {'M
+ Math': {'Applied\, Pure\, Theoretical Physics'}\, 'MPhd': {'Algebra\, Comb
+ inatorics\, Probability'}}
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🚨 Interview: Angela Jones for Engineering PhD with Dr. Michelle
+  Brown and Prof. Sebastian Gray
+DTSTART:20251110T090000
+DTEND:20251110T120000
+DESCRIPTION:Total cost 1010100. Penalties: []\, Cost: ['Avail mismatch'\, 
+ 'Subject mismatch']\, Candidate location Warwick\, Candidate specialism(s)
+  nan\, Dr. Michelle Brown subjects(s): Biomedicine PhD and specialisms: {'
+ MMath': {'nan'}\, 'MPhd': {'nan'}}\, Prof. Sebastian Gray subjects(s) Math
+ s PhD\, Maths Masters\, Engineering PhD\, AI PhD and specialisms {'MMath':
+  {'Applied\, Pure'}\, 'MPhd': {'Logic and set theory\, Mathematical or the
+ oretical physics\, Nonlinear systems'}}
+LOCATION:Bristol
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:⚠️ Interview: Helen Harris for AI Masters with Prof. Edward Co
+ llins and Dr. Stephanie Jones
+DTSTART:20251103T130000
+DTEND:20251103T160000
+DESCRIPTION:Total cost 10118. Penalties: []\, Cost: ['Avail mismatch']\, C
+ andidate location Bristol\, Candidate specialism(s) nan\, Prof. Edward Col
+ lins subjects(s): Maths PhD\, Maths Masters\, AI Masters and specialisms: 
+ {'MMath': {'Applied'}\, 'MPhd': {'Mathematical or theoretical physics\, Ge
+ ometry and topology\, Analysis'}}\, Dr. Stephanie Jones subjects(s) Maths 
+ Masters\, AI Masters and specialisms {'MMath': {'Pure\, Applied'}\, 'MPhd'
+ : {'nan'}}
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:⚠️ Interview: Helen Harris for Engineering PhD with Dr. Ella R
+ ichardson and Dr. Ella Richardson
+DTSTART:20251107T090000
+DTEND:20251107T120000
+DESCRIPTION:Total cost 10118. Penalties: []\, Cost: ['Avail mismatch']\, C
+ andidate location Bristol\, Candidate specialism(s) nan\, Dr. Ella Richard
+ son subjects(s): Engineering PhD and specialisms: {'MMath': {'nan'}\, 'MPh
+ d': {'nan'}}\, Dr. Ella Richardson subjects(s) Engineering PhD and special
+ isms {'MMath': {'nan'}\, 'MPhd': {'nan'}}
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:🚨 Interview: Laura Richardson for Engineering PhD with Dr. Jess
+ ica Taylor and Prof. Michael Thompson
+DTSTART:20251103T130000
+DTEND:20251103T160000
+DESCRIPTION:Total cost 1010289. Penalties: []\, Cost: ['Avail mismatch'\, 
+ 'Subject mismatch']\, Candidate location Newcastle\, Candidate specialism(
+ s) nan\, Dr. Jessica Taylor subjects(s): Maths Masters and specialisms: {'
+ MMath': {'Applied'}\, 'MPhd': {'nan'}}\, Prof. Michael Thompson subjects(s
+ ) Maths PhD\, Maths Masters\, AI Masters\, Engineering PhD\, AI PhD and sp
+ ecialisms {'MMath': {'Applied\, Pure\, Theoretical Physics'}\, 'MPhd': {'A
+ lgebra\, Combinatorics\, Probability'}}
+LOCATION:London
+END:VEVENT
+END:VCALENDAR
