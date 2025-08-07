@@ -1,37 +1,163 @@
 BEGIN:VCALENDAR
 BEGIN:VEVENT
-SUMMARY:Interview: Michael Thompson for AI Masters with Sophie Thomas and 
- Karen Young
-DTSTART:20251110T090000
-DTEND:20251110T120000
-LOCATION:Birmingham
-END:VEVENT
-BEGIN:VEVENT
-SUMMARY:Interview: Natalie Sanchez for Engineering PhD with Jonathan River
- a and Steven Jones
+SUMMARY:Interview: Jason Kim for Maths Masters with Dr. Nicole White and P
+ rof. Dominic Powell
 DTSTART:20251104T130000
 DTEND:20251104T160000
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Natalie Sanchez for Maths PhD with Sophie Thomas and Ka
- ren Young
-DTSTART:20251106T130000
-DTEND:20251106T160000
+SUMMARY:Interview: Maria Sanders for Maths PhD with Prof. David Kumar and 
+ Prof. Sebastian Gray
+DTSTART:20251113T090000
+DTEND:20251113T120000
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Benjamin Brooks for Maths PhD with Dr. Sarah Mitchell a
+ nd Prof. Sebastian Gray
+DTSTART:20251113T130000
+DTEND:20251113T160000
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Jerry Patel for Maths PhD with Prof. Julian Ward and Dr
+ . Rachel Green
+DTSTART:20251113T130000
+DTEND:20251113T160000
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Patrick Lewis for Engineering PhD with Prof. Peter Wals
+ h and Prof. Robert Smith
+DTSTART:20251113T090000
+DTEND:20251113T120000
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Rachel Hernandez for AI Masters with Dr. Hannah Clarke 
+ and Prof. Benjamin Hughes
+DTSTART:20251111T130000
+DTEND:20251111T160000
 LOCATION:Manchester
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Natalie Sanchez for AI PhD with Sarah Young and Megan B
- aker
+SUMMARY:Interview: Edward Ramirez for Maths Masters with Prof. Richard Eva
+ ns and Dr. Isabella King
+DTSTART:20251110T090000
+DTEND:20251110T120000
+LOCATION:Bristol
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Jennifer Jackson for Maths Masters with Prof. Benjamin 
+ Hughes and Prof. Steven Anderson
+DTSTART:20251113T090000
+DTEND:20251113T120000
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Jennifer Jackson for AI Masters with Prof. Michael Thom
+ pson and Dr. Amanda Taylor
+DTSTART:20251104T090000
+DTEND:20251104T120000
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Sarah Hernandez for Maths Masters with Prof. Thomas Moo
+ re and Dr. Jennifer Lopez
+DTSTART:20251106T090000
+DTEND:20251106T120000
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Olivia Howard for Engineering PhD with Dr. Amanda Taylo
+ r and Dr. Maria Rodriguez
 DTSTART:20251103T130000
 DTEND:20251103T160000
 LOCATION:London
 END:VEVENT
 BEGIN:VEVENT
-SUMMARY:Interview: Amy Hall for Maths PhD with Sophie Thomas and Karen You
- ng
-DTSTART:20251106T090000
-DTEND:20251106T120000
+SUMMARY:Interview: Emma Gray for Maths Masters with Prof. Daniel Wilson an
+ d Dr. Victoria Singh
+DTSTART:20251114T130000
+DTEND:20251114T160000
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Jack Cruz for AI Masters with Prof. Andrew Davis and Dr
+ . Sarah Mitchell
+DTSTART:20251114T130000
+DTEND:20251114T160000
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Jack Cruz for Maths PhD with Dr. Amanda Taylor and Prof
+ . Sebastian Gray
+DTSTART:20251111T130000
+DTEND:20251111T160000
 LOCATION:Manchester
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Ashley Kelly for Maths Masters with Dr. Victoria Singh 
+ and Prof. Simon Foster
+DTSTART:20251107T090000
+DTEND:20251107T120000
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Sandra Adams for Engineering PhD with Prof. Brian Thomp
+ son and Prof. Daniel Wilson
+DTSTART:20251104T090000
+DTEND:20251104T120000
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Shirley Diaz for Engineering PhD with Dr. Stephanie Jon
+ es and Prof. Richard Evans
+DTSTART:20251110T090000
+DTEND:20251110T120000
+LOCATION:Bristol
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Joshua Nguyen for Maths PhD with Dr. Emma Watson and Dr
+ . Sarah Mitchell
+DTSTART:20251104T090000
+DTEND:20251104T120000
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Patrick Rivera for Maths Masters with Dr. Emily Chen an
+ d Prof. Michael Thompson
+DTSTART:20251113T090000
+DTEND:20251113T120000
+LOCATION:Edinburgh
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Angela Jones for Engineering PhD with Dr. Michelle Brow
+ n and Prof. Sebastian Gray
+DTSTART:20251110T090000
+DTEND:20251110T120000
+LOCATION:Bristol
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Helen Harris for AI Masters with Prof. Edward Collins a
+ nd Dr. Stephanie Jones
+DTSTART:20251103T130000
+DTEND:20251103T160000
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Helen Harris for Engineering PhD with Dr. Ella Richards
+ on and Dr. Ella Richardson
+DTSTART:20251107T090000
+DTEND:20251107T120000
+LOCATION:London
+END:VEVENT
+BEGIN:VEVENT
+SUMMARY:Interview: Laura Richardson for Engineering PhD with Dr. Jessica T
+ aylor and Prof. Michael Thompson
+DTSTART:20251103T130000
+DTEND:20251103T160000
+LOCATION:London
 END:VEVENT
 END:VCALENDAR
