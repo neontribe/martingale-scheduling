@@ -2,12 +2,109 @@ import copy
 import sys
 import time
 from collections import defaultdict
+from contextlib import contextmanager
 from pathlib import Path
 
 from ortools.sat.python import cp_model
 
 from .libs.classes import Space, SubjCandidate
 from .libs.utilities import extract_data, create_calendar
+
+
+@contextmanager
+def timed(label: str, logger=print):
+    """Context manager to time and log code blocks."""
+    t0 = time.time()
+    try:
+        yield
+    finally:
+        logger(f"{label} in {time.time() - t0:.2f} seconds")
+
+
+def resolve_base_path() -> Path:
+    """Handle PyInstaller frozen vs normal script path."""
+    if getattr(sys, "frozen", False):
+        return Path(sys._MEIPASS).parents[4]
+    return Path(__file__).parents[2]
+
+
+def resolve_paths(base: Path, *rels: str) -> list[Path]:
+    """Resolve multiple relative paths against a base directory."""
+    return [(base / Path(r)).resolve() for r in rels]
+
+
+def get_int(prompt: str, input_fn=input, logger=print) -> int:
+    """Repeated input-validation pattern."""
+    while True:
+        try:
+            return int(input_fn(prompt))
+        except Exception:
+            logger("Batch size must be an integer, with no additional characters")
+
+
+def plan_batches(self, candidates, cand_copy, spaces, batch_size):
+    """Split candidates and spaces into groups."""
+    cand_groups, cand_r = self.split_into_groups(candidates, batch_size)
+    copy_groups, copy_r = self.split_into_groups(cand_copy, batch_size)
+    no_batches = len(cand_groups) + 1
+    space_size = len(spaces) // no_batches
+    space_groups, space_r = self.split_into_groups(spaces, space_size)
+    assert no_batches == len(space_groups)
+    return cand_groups, copy_groups, cand_r, copy_r, space_groups, space_r, no_batches, space_size
+
+
+def add_assignment_constraints(model, x, cand_list, space_list):
+    """Each candidate to one space, each space to at most one candidate."""
+    for c in cand_list:
+        model.AddExactlyOne(x[c, s] for s in space_list)
+    for s in space_list:
+        model.AddAtMostOne(x[c, s] for c in cand_list)
+
+
+def set_min_cost_objective(model, cost, x, penalties, cand_list, space_list):
+    """Standard objective function setup."""
+    model.Minimize(
+        sum(cost[c, s] * x[c, s] for c in cand_list for s in space_list) + sum(weight * p for (p, weight) in penalties))
+
+
+def solve_model(model, verbose=True):
+    """Standardized solver creation and run."""
+    solver = cp_model.CpSolver()
+    if verbose:
+        solver.parameters.log_search_progress = True
+        solver.log_callback = print
+    status = solver.Solve(model)
+    feasible = status in (cp_model.OPTIMAL, cp_model.FEASIBLE)
+    return solver, feasible
+
+
+def run_round(i, model, x, cost, penalties, cand_group, copy_group, space_group, logger=print):
+    """Handles one optimization round."""
+    with timed(f"Round {i} set up", logger):
+        all_cand = cand_group + copy_group
+        add_assignment_constraints(model, x, all_cand, space_group)
+        set_min_cost_objective(model, cost, x, penalties, all_cand, space_group)
+    logger(f"Now solving round {i}...")
+    solver, ok = solve_model(model, verbose=True)
+    logger(f"Round {i} {'solution found' if ok else 'no solution'}")
+    return solver, ok
+
+
+def run_final_round(model, x, cost, penalties, cand_list, space_list, logger=print):
+    """Handles the final optimization round."""
+    with timed("Final set up", logger):
+        add_assignment_constraints(model, x, cand_list, space_list)
+        set_min_cost_objective(model, cost, x, penalties, cand_list, space_list)
+    logger("Now solving final round...")
+    return solve_model(model, verbose=True)
+
+
+def write_calendars(base_path, candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg):
+    """Creates calendar output files."""
+    output_file_data, output_file_clean = resolve_paths(base_path, "./output/data_interviews.ics",
+        "./output/clean_interviews.ics")
+    create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg, output_file_data,
+        output_file_clean)
 
 
 class Scheduler:
@@ -393,7 +490,7 @@ class Scheduler:
 
         # Hard constraints: double-booking or same day/different location
         is_hard_violation = (
-                    (s2.date == s1.date and s2.time == s1.time) or (s2.date == s1.date and s2.location != s1.location))
+                (s2.date == s1.date and s2.time == s1.time) or (s2.date == s1.date and s2.location != s1.location))
 
         # Soft constraints: consecutive days, different locations
         is_soft_violation = (abs((s1.date - s2.date).days) == 1 and s1.location != s2.location)
@@ -445,146 +542,67 @@ class Scheduler:
         remainder = lst[len(groups) * 20:]
         return groups, remainder
 
-    def run(self):
-        print("Please be patient, this may take a few minutes")
-        start = time.time()
-        # If frozen (compiled with PyInstaller), use the executable's path
-        if getattr(sys, 'frozen', False):
-            base_path = Path(sys._MEIPASS).parents[4]  # or Path(sys.executable).parent
-        else:
-            base_path = Path(__file__).parents[2]
-        rel_cand_path = Path("./data/scholarship_candidates.xlsx")
-        rel_ac_path = Path("./data/academic_assessors.xlsx")
-        rel_loc_path = Path("./data/Locations.xlsx")
-        abs_cand_path = (base_path / rel_cand_path).resolve()
-        abs_ac_path = (base_path / rel_ac_path).resolve()
-        abs_loc_path = (base_path / rel_loc_path).resolve()
-        candidate_df, academic_df, location_df = extract_data(abs_cand_path, abs_ac_path, abs_loc_path)
-        end = time.time()
-        print(f"Data has been extracted in {end - start} seconds")
+    def run(self, logger=print, input_fn=input):
+        logger("Please be patient, this may take a few minutes")
 
-        start = time.time()
-        spaces = Space.gen_spaces(academic_df)
-        candidates = SubjCandidate.gen_cand(candidate_df)
-        print(f"No. Interviews: {len(candidates)}")
-        print(f"No. Spaces: {len(spaces)}")
+        base_path = resolve_base_path()
+
+        # ---- Data Extraction ----
+        abs_cand_path, abs_ac_path, abs_loc_path = resolve_paths(base_path, "./data/scholarship_candidates.xlsx",
+            "./data/academic_assessors.xlsx", "./data/Locations.xlsx")
+
+        with timed("Data extraction"):
+            candidate_df, academic_df, location_df = extract_data(abs_cand_path, abs_ac_path, abs_loc_path)
+
+        # ---- Object Generation ----
+        with timed("Generating data objects"):
+            spaces = Space.gen_spaces(academic_df)
+            candidates = SubjCandidate.gen_cand(candidate_df)
+            weights = self.gen_weights(location_df)
+            cand_copy = copy.deepcopy(candidates)
+
+        logger(f"No. Interviews: {len(candidates)}")
+        logger(f"No. Spaces: {len(spaces)}")
+
         if len(spaces) < len(candidates):
-            print("There are more candidates than spaces")
+            logger("There are more candidates than spaces")
             exit()
-        weights = self.gen_weights(location_df)
-        cand_copy = copy.deepcopy(candidates)
-        end = time.time()
-        print(f"Data objects have been generated in {end - start} seconds")
 
-        start = time.time()
-        self.setup_decision_variables(candidates, cand_copy, spaces)
-        end = time.time()
-        print(f"Decision variables set up in {end - start} seconds")
-        start = time.time()
-        self.gen_matches_alt(candidates, cand_copy, spaces, weights)
-        end = time.time()
-        print(f"Matches set up in {end - start} seconds")
-        start = time.time()
-        self.date_constraints_alt(candidates, spaces)
-        end = time.time()
-        print(f"Constraints have been generated in {end - start} seconds")
+        # ---- Model Setup ----
+        with timed("Setting up decision variables"):
+            self.setup_decision_variables(candidates, cand_copy, spaces)
 
-        valid = False
-        batch_size = 1 # default
-        while not valid:
-            try:
-                batch_size = int(input("Please enter desired batch size"))
-                valid = True
-            except:
-                print("Batch size must be an integer, with no additional characters")
+        with timed("Generating matches"):
+            self.gen_matches_alt(candidates, cand_copy, spaces, weights)
 
-        cand_groups, cand_r = self.split_into_groups(candidates, batch_size)
-        copy_groups, copy_r = self.split_into_groups(cand_copy, batch_size)
-        no_batches = len(cand_groups) + 1  # eg 3
-        space_size = (len(spaces)) // no_batches  # eg 200 // 3 = 66 r 2
-        space_groups, space_r = self.split_into_groups(spaces, space_size)
+        with timed("Generating constraints"):
+            self.date_constraints_alt(candidates, spaces)
 
-        print(
-            f"No batches {no_batches}, no of space groups {len(space_groups)}, space_size {space_size}, no spaces total {len(spaces)}, no candidates total {len(candidates)}, no candidate groups {len(cand_groups)}")
-        assert no_batches == len(space_groups)
+        batch_size = get_int("Please enter desired batch size", input_fn, logger)
 
+        cand_groups, copy_groups, cand_r, copy_r, space_groups, space_r, no_batches, space_size = plan_batches(self,
+            candidates, cand_copy, spaces, batch_size)
+
+        logger(f"No batches {no_batches}, no of space groups {len(space_groups)}, "
+               f"space_size {space_size}, no spaces total {len(spaces)}, "
+               f"no candidates total {len(candidates)}, no candidate groups {len(cand_groups)}")
+
+        # ---- Round Processing ----
         round_status_list = []
+        for i, (cg, kg, sg) in enumerate(zip(cand_groups, copy_groups, space_groups)):
+            _, ok = run_round(i, self.model, self.x, self.cost, self.penalties, cg, kg, sg, logger)
+            round_status_list.append(ok)
 
-        for i in range(0, len(cand_groups)):
-            start = time.time()
-            cand_group = cand_groups[i]
-            copy_group = copy_groups[i]
-            space_group = space_groups[i]
-
-            all_cand_group = cand_group + copy_group
-            # Each candidate assigned to exactly one space
-            for c in all_cand_group:
-                self.model.AddExactlyOne(self.x[c, s] for s in space_group)
-
-            # Each space assigned to at most one candidate
-            for s in space_group:
-                self.model.AddAtMostOne(self.x[c, s] for c in all_cand_group)
-
-            # Objective: minimize total cost
-            self.model.Minimize(sum(self.cost[c, s] * self.x[c, s] for c in all_cand_group for s in space_group) + sum(
-                weight * p for (p, weight) in self.penalties))
-            end = time.time()
-            print(f"Round {i} set up completed in {end - start} seconds. Now solving round {i}...")
-
-            # Solve
-            solver = cp_model.CpSolver()
-            solver.parameters.log_search_progress = True
-            solver.log_callback = print
-            status = solver.Solve(self.model)
-
-            if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]:
-                round_status_list.append(True)
-                print(f"Round {i} solution found")
-            else:
-                round_status_list.append(False)
-                print(f"No solution found for round {i}")
-
-        start = time.time()
+        # ---- Final Round ----
         all_cand_r = cand_r + copy_r
-        space_r = space_r + space_groups[len(space_groups) - 1]
+        last_spaces = space_r + space_groups[-1]
+        solver, ok = run_final_round(self.model, self.x, self.cost, self.penalties, all_cand_r, last_spaces, logger)
+        round_status_list.append(ok)
 
-        # Each candidate assigned to exactly one space
-        for c in all_cand_r:
-            self.model.AddExactlyOne(self.x[c, s] for s in space_r)
+        logger("Final round solution found" if ok else "Final round solution not found")
 
-        # Each space assigned to at most one candidate
-        for s in space_r:
-            self.model.AddAtMostOne(self.x[c, s] for c in all_cand_r)
-
-        # Objective: minimize total cost
-        self.model.Minimize(sum(self.cost[c, s] * self.x[c, s] for c in all_cand_r for s in space_r) + sum(
-            weight * p for (p, weight) in self.penalties))
-        end = time.time()
-        print(f"Final set up completed in {end - start} seconds. Now solving...")
-
-        # Solve
-        solver = cp_model.CpSolver()
-        solver.parameters.log_search_progress = True
-        solver.log_callback = print
-        status = solver.Solve(self.model)
-
-        if status in [cp_model.OPTIMAL, cp_model.FEASIBLE]:
-            round_status_list.append(True)
-            print(f"Final round solution found")
-        else:
-            round_status_list.append(False)
-            print(f"Final round solution not")
-
-        # create and store a calendar file
-        print(f"Solution generated in {end - start} seconds. Now generating calendar...")
-        output_data_rel_path = Path("./output/data_interviews.ics")
-        output_clean_rel_path = Path("./output/clean_interviews.ics")
-        output_file_data = (base_path / output_data_rel_path).resolve()
-        output_file_clean = (base_path / output_clean_rel_path).resolve()
-        create_calendar(candidates, cand_copy, spaces, solver, self.x, self.cost, self.pen_dict, self.cost_msg,
-                        output_file_data, output_file_clean)
+        # ---- Calendar Output ----
+        logger("Generating calendar...")
+        write_calendars(base_path, candidates, cand_copy, spaces, solver, self.x, self.cost, self.pen_dict,
+                        self.cost_msg)
         time.sleep(10)
-
-
-scheduler = Scheduler()
-scheduler.run()
