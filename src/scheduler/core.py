@@ -1,7 +1,7 @@
-from .prototype import Scheduler
+from src.scheduler.prototype import Scheduler
 
-def do_task(data_dir: str, settings):
-    print(f"Running on {data_dir} with {settings}")
+def do_task(data_dir: str):
+    print(f"Running on {data_dir}")
     scheduler = Scheduler()
     result = scheduler.run()
 
