@@ -1,6 +1,6 @@
 from src.scheduler.libs.utilities import parse_schedule
 from src.scheduler.libs.classes import Space, Subj_Candidate
-from src.scheduler.prototype import Scheduler
+
 import pandas as pd
 from datetime import datetime
 from pathlib import Path
@@ -88,8 +88,6 @@ def test_gen_candidates():
     assert cand.subject == "AI Masters"
 
 def test_disallowed():
-    #use 1 candidate test run
-    candidates = Subj_Candidate("Test McTest", "Monday 3 November", "Norwich", "Theoretical Physics", "Maths Masters")
     #several variations
     spaces = [Space(datetime(1900, 11, 3, 0, 0), "Monday 3 November", "morning", "Manchester", "Theoretical Physics", "Maths", "Dr. Interviewer"), Space(datetime(1900, 11, 4, 0, 0), "Tuesday 4 November", "morning", "Manchester", "Theoretical Physics", "Maths", "Dr. Interviewer"), Space(datetime(1900, 11, 3, 0, 0), "Monday 3 November", "afternoon", "Manchester", "Theoretical Physics", "Maths", "Dr. Interviewer"), Space(datetime(1900, 11, 3, 0, 0), "Monday 3 November", "morning", "London", "Theoretical Physics", "Maths", "Dr. Interviewer"), Space(datetime(1900, 11, 3, 0, 0), "Monday 3 November", "morning", "Manchester", "Theoretical Physics", "Maths", "Miss. Other")]
     disallowed_dict = {}
@@ -106,7 +104,6 @@ def test_disallowed():
 
 def special_match(candidates, cand_copy, spaces):
     idx = 0
-    penalties = []
     pen_dict = defaultdict(list)
     for c in candidates:
         for s in spaces:

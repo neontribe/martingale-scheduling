@@ -1,6 +1,5 @@
 from datetime import datetime
 
-#from src.scheduler.libs.utilities import parse_schedule
 from .utilities import parse_schedule
 
 
@@ -23,17 +22,17 @@ class Space:
         date_format = '%A %d %B'
         idx = 0
         for col in df:  # for every interviewer
-            
+
             # extracting cells from interviewer column in dataframe
             avail = df[col].iloc[2]
             subjects = df[col].iloc[3]
-            
+
             mmath = str((df[col].iloc[4])).split(",")
-            for i in range (0, len(mmath)):
+            for i in range(0, len(mmath)):
                 mmath[i] = mmath[i].strip()
 
             mphd = str((df[col].iloc[5])).split(",")
-            for i in range (0, len(mphd)):
+            for i in range(0, len(mphd)):
                 mphd[i] = mphd[i].strip()
 
             mmath = set(mmath)
@@ -68,8 +67,6 @@ class Subj_Candidate:
     def gen_cand(df):
         """Instantiates the Subj_Cand class. One of these per interviewee per course they are interviewing for"""
         candidates = []
-        ME_all_cand = []  # this is a 2d list containing lists of candidate objects belonging to the same interviewee
-        # it is used to ensure that one interviewee is not double-booked (or booked on consecutive dates) for different course
         idx = 0
         for col in df:  # for every interviewee
 
@@ -78,23 +75,23 @@ class Subj_Candidate:
             avail = df[col].iloc[2]
             avail_full = ""
             dates, locations, am_pm = parse_schedule(avail)
-            for i in range (0, len(dates)):
+            for i in range(0, len(dates)):
                 avail_full = avail_full + dates[i] + " " + am_pm[i]
             address = df[col].iloc[3]
             mast_subjects = str(df[col].iloc[4]).split(',')
-            for i in range (0, len(mast_subjects)):
+            for i in range(0, len(mast_subjects)):
                 mast_subjects[i] = mast_subjects[i].strip()
 
             phd_subjects = str(df[col].iloc[5]).split(',')
-            for i in range (0, len(phd_subjects)):
+            for i in range(0, len(phd_subjects)):
                 phd_subjects[i] = phd_subjects[i].strip()
-                
+
             mmath = str((df[col].iloc[6])).split(",")
-            for i in range (0, len(mmath)):
+            for i in range(0, len(mmath)):
                 mmath[i] = mmath[i].strip()
 
             mphd = str((df[col].iloc[7])).split(",")
-            for i in range (0, len(mphd)):
+            for i in range(0, len(mphd)):
                 mphd[i] = mphd[i].strip()
             mmath = set(mmath)
             mphd = set(mphd)
@@ -120,5 +117,5 @@ class Subj_Candidate:
                         specialism = "nan"
                     subj_cand = Subj_Candidate(name, avail_full, address, specialism, course, cand_id)
                     candidates.append(subj_cand)
-            idx += 1         
+            idx += 1
         return candidates

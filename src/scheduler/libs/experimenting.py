@@ -1,7 +1,9 @@
-import pandas as pd
 import random
-from classes import Space, Subj_Candidate
+
+import pandas as pd
 from ortools.sat.python import cp_model
+
+from classes import Space, Subj_Candidate
 
 df = pd.read_excel("data/Scholarship_Assessor_Data.xlsx")
 df2 = pd.read_excel("data/20_applicants.xlsx")
@@ -32,8 +34,6 @@ candidates, trash = Subj_Candidate.gen_cand(df2)
 
 model = cp_model.CpModel()
 
-
-
 x = {}
 for c in candidates:
     for s in spaces:
@@ -55,70 +55,68 @@ for c in candidates:
 for s in spaces:
     model.AddAtMostOne(x[c, s] for c in candidates)
 
-
 # Objective: minimize total cost
-model.Minimize(
-    sum(weight * p for (p, weight) in penalties) + sum(x[c,s] * random.randint(1,10) for c in candidates for s in spaces)
-)
-
+model.Minimize(sum(weight * p for (p, weight) in penalties) + sum(
+    x[c, s] * random.randint(1, 10) for c in candidates for s in spaces))
 
 for c1 in candidates:
-        for c2 in candidates: #for every candidate combination
-            if (c1.name == c2.name) and (c1 != c2): #for all different candidates with the same name, 
-                for s1 in spaces:
-                    for s2 in spaces:
-                        #disallow: double-booked or same day different location
-                        if (s1!=s2) and ((s2.date == s1.date and s1.time == s2.time)):
-                            if (c1, s1) in x and (c2, s2) in x:
-                                penalty = model.NewBoolVar(f"penalty1_{c1}_{c2}_{s1}_{s2}")
-
-                                # trigger penalty if both x[c1,s1] and x[c2,s2] are true
-                                model.Add(penalty >= x[c1, s1] + x[c2, s2] - 1)
-
-                                penalties.append((penalty, 1000))
-                            else:
-                                print(f"Missing variable for {c1}, {s1} or {c2}, {s2}")
-
-
-                        elif (s1 != s2) and (s2.date == s1.date and s2.location != s1.location):
-                            #print(f"Different locations, same date {c1.name}/{c2.name} for {s1.date}{s1.time} with {s1.interviewer} and {s2.date}{s2.time} with {s2.interviewer}")
-
+    for c2 in candidates:  # for every candidate combination
+        if (c1.name == c2.name) and (c1 != c2):  # for all different candidates with the same name,
+            for s1 in spaces:
+                for s2 in spaces:
+                    # disallow: double-booked or same day different location
+                    if (s1 != s2) and ((s2.date == s1.date and s1.time == s2.time)):
+                        if (c1, s1) in x and (c2, s2) in x:
                             penalty = model.NewBoolVar(f"penalty1_{c1}_{c2}_{s1}_{s2}")
 
                             # trigger penalty if both x[c1,s1] and x[c2,s2] are true
                             model.Add(penalty >= x[c1, s1] + x[c2, s2] - 1)
 
                             penalties.append((penalty, 1000))
+                        else:
+                            print(f"Missing variable for {c1}, {s1} or {c2}, {s2}")
 
-                        #undesirable: consecutive days, different locations
-                        elif ((abs((s1.date - s2.date).days) == 1) and (s1.location != s2.location)):
-                            penalty = model.NewBoolVar(f"penalty1_{c1}_{c2}_{s1}_{s2}")
 
-                            # trigger penalty if both x[c1,s1] and x[c2,s2] are true
-                            model.Add(penalty >= x[c1, s1] + x[c2, s2] - 1)
+                    elif (s1 != s2) and (s2.date == s1.date and s2.location != s1.location):
+                        # print(f"Different locations, same date {c1.name}/{c2.name} for {s1.date}{s1.time} with {s1.interviewer} and {s2.date}{s2.time} with {s2.interviewer}")
 
-                            penalties.append((penalty, 1000))
+                        penalty = model.NewBoolVar(f"penalty1_{c1}_{c2}_{s1}_{s2}")
+
+                        # trigger penalty if both x[c1,s1] and x[c2,s2] are true
+                        model.Add(penalty >= x[c1, s1] + x[c2, s2] - 1)
+
+                        penalties.append((penalty, 1000))
+
+                    # undesirable: consecutive days, different locations
+                    elif ((abs((s1.date - s2.date).days) == 1) and (s1.location != s2.location)):
+                        penalty = model.NewBoolVar(f"penalty1_{c1}_{c2}_{s1}_{s2}")
+
+                        # trigger penalty if both x[c1,s1] and x[c2,s2] are true
+                        model.Add(penalty >= x[c1, s1] + x[c2, s2] - 1)
+
+                        penalties.append((penalty, 1000))
 for s1 in spaces:
     for s2 in spaces:
-        if (s1.interviewer == s2.interviewer) and (s1!= s2):
+        if (s1.interviewer == s2.interviewer) and (s1 != s2):
             for c1 in candidates:
                 for c2 in candidates:
-                #disallow: double-booked or same day different location
-                    if c1!=c2 and ((s2.date == s1.date and s2.time == s1.time) or (s2.date == s1.date and s2.location != s1.location)):
-                            penalty = model.NewBoolVar(f"penalty_{c1}_{c2}_{s1}_{s2}")
+                    # disallow: double-booked or same day different location
+                    if c1 != c2 and ((s2.date == s1.date and s2.time == s1.time) or (
+                            s2.date == s1.date and s2.location != s1.location)):
+                        penalty = model.NewBoolVar(f"penalty_{c1}_{c2}_{s1}_{s2}")
 
-                            # trigger penalty if both x[c1,s1] and x[c2,s2] are true
-                            model.Add(penalty >= x[c1, s1] + x[c2, s2] - 1)
+                        # trigger penalty if both x[c1,s1] and x[c2,s2] are true
+                        model.Add(penalty >= x[c1, s1] + x[c2, s2] - 1)
 
-                            penalties.append((penalty, 1000))
-                        #undesirable: consecutive days, different locations
-                    elif c1!=c2 and ((abs((s1.date - s2.date).days) == 1) and (s1.location != s2.location)):
-                            penalty = model.NewBoolVar(f"penalty_{c1}_{c2}_{s1}_{s2}")
+                        penalties.append((penalty, 1000))
+                    # undesirable: consecutive days, different locations
+                    elif c1 != c2 and ((abs((s1.date - s2.date).days) == 1) and (s1.location != s2.location)):
+                        penalty = model.NewBoolVar(f"penalty_{c1}_{c2}_{s1}_{s2}")
 
-                            # trigger penalty if both x[c1,s1] and x[c2,s2] are true
-                            model.Add(penalty >= x[c1, s1] + x[c2, s2] - 1)
+                        # trigger penalty if both x[c1,s1] and x[c2,s2] are true
+                        model.Add(penalty >= x[c1, s1] + x[c2, s2] - 1)
 
-                            penalties.append((penalty, 1000))
+                        penalties.append((penalty, 1000))
 # Solve
 solver = cp_model.CpSolver()
 status = solver.Solve(model)
