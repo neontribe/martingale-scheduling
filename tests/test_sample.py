@@ -1,5 +1,5 @@
 from src.scheduler.libs.utilities import parse_schedule
-from src.scheduler.libs.classes import Space, Subj_Candidate
+from src.scheduler.libs.classes import Space, SubjCandidate
 
 import pandas as pd
 from datetime import datetime
@@ -77,7 +77,7 @@ def test_gen_candidates():
     file_path = test_dir / "data" / "Application_Form_Data.xlsx"
     df = pd.read_excel(file_path)
 
-    candidates = Subj_Candidate.gen_cand(df)
+    candidates = SubjCandidate.gen_cand(df)
 
     cand = candidates[8]
     
@@ -124,7 +124,7 @@ def special_match(candidates, cand_copy, spaces):
     return pen_dict
 
 def test_special_match_valid():
-    c = [Subj_Candidate("Test McTest", "Monday 3 November", "Norwich", "Theoretical Physics", "Maths Masters")]
+    c = [SubjCandidate("Test McTest", "Monday 3 November", "Norwich", "Theoretical Physics", "Maths Masters")]
     spaces = [Space(datetime(1900, 11, 3, 0, 0), "Monday 3 November", "morning", "Manchester", {"MMath": {"Theoretical Physics", "Statistics"}, "MPhd": "nan"}, "Maths", "Dr. Interviewer"), Space(datetime(1900, 11, 3, 0, 0), "Tuesday 3 November", "morning", "Manchester", {"MMath": "nan", "MPhd": "nan"}, "Maths", "Dr. Interviewer"), Space(datetime(1900, 11, 3, 0, 0), "Monday 3 November", "afternoon", "Manchester", {"MMath": {"Statistics"}, "MPhd": "nan"} , "Maths", "Dr. Interviewer"), Space(datetime(1900, 11, 3, 0, 0), "Monday 3 November", "morning", "London", {"MMath": {"Statistics", "Algebra"}, "MPhd": "nan"}, "Maths", "Dr. Interviewer"), Space(datetime(1900, 11, 3, 0, 0), "Monday 3 November", "morning", "Manchester", {"MMath": {"Theoretical Physics"}, "MPhd": "nan"}, "Maths", "Miss. Other")]
     cand_copy = copy.deepcopy(c)
     pen_dict = special_match(c, cand_copy, spaces)

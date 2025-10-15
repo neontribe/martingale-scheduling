@@ -3,13 +3,13 @@ import random
 import pandas as pd
 from ortools.sat.python import cp_model
 
-from classes import Space, Subj_Candidate
+from classes import Space, SubjCandidate
 
 df = pd.read_excel("data/Scholarship_Assessor_Data.xlsx")
 df2 = pd.read_excel("data/20_applicants.xlsx")
 
 spaces = Space.gen_spaces(df)
-candidates, trash = Subj_Candidate.gen_cand(df2)
+candidates, trash = SubjCandidate.gen_cand(df2)
 
 # df = pd.read_excel("Scholarship_Assessor_Data.xlsx")
 # print(df.iloc[0,0]) #0 Name
@@ -65,7 +65,7 @@ for c1 in candidates:
             for s1 in spaces:
                 for s2 in spaces:
                     # disallow: double-booked or same day different location
-                    if (s1 != s2) and ((s2.date == s1.date and s1.time == s2.time)):
+                    if (s1 != s2) and (s2.date == s1.date and s1.time == s2.time):
                         if (c1, s1) in x and (c2, s2) in x:
                             penalty = model.NewBoolVar(f"penalty1_{c1}_{c2}_{s1}_{s2}")
 
@@ -88,7 +88,7 @@ for c1 in candidates:
                         penalties.append((penalty, 1000))
 
                     # undesirable: consecutive days, different locations
-                    elif ((abs((s1.date - s2.date).days) == 1) and (s1.location != s2.location)):
+                    elif (abs((s1.date - s2.date).days) == 1) and (s1.location != s2.location):
                         penalty = model.NewBoolVar(f"penalty1_{c1}_{c2}_{s1}_{s2}")
 
                         # trigger penalty if both x[c1,s1] and x[c2,s2] are true

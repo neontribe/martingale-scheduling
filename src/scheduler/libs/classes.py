@@ -54,7 +54,7 @@ class Space:
         return spaces
 
 
-class Subj_Candidate:
+class SubjCandidate:
     def __init__(self, name, avail, address, specialisms, subject, cand_id):
         self.name = name
         self.avail = avail
@@ -105,7 +105,7 @@ class Subj_Candidate:
                         specialism = mmath
                     else:
                         specialism = "nan"
-                    subj_cand = Subj_Candidate(name, avail_full, address, specialism, course, cand_id)
+                    subj_cand = SubjCandidate(name, avail_full, address, specialism, course, cand_id)
                     candidates.append(subj_cand)
 
             for ele in phd_subjects:  # for every PhD course being interviewed for
@@ -115,7 +115,7 @@ class Subj_Candidate:
                         specialism = mphd
                     else:
                         specialism = "nan"
-                    subj_cand = Subj_Candidate(name, avail_full, address, specialism, course, cand_id)
+                    subj_cand = SubjCandidate(name, avail_full, address, specialism, course, cand_id)
                     candidates.append(subj_cand)
             idx += 1
         return candidates

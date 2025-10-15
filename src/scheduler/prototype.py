@@ -6,7 +6,7 @@ from pathlib import Path
 
 from ortools.sat.python import cp_model
 
-from .libs.classes import Space, Subj_Candidate
+from .libs.classes import Space, SubjCandidate
 from .libs.utilities import extract_data, create_calendar
 
 
@@ -465,7 +465,7 @@ class Scheduler:
 
         start = time.time()
         spaces = Space.gen_spaces(academic_df)
-        candidates = Subj_Candidate.gen_cand(candidate_df)
+        candidates = SubjCandidate.gen_cand(candidate_df)
         print(f"No. Interviews: {len(candidates)}")
         print(f"No. Spaces: {len(spaces)}")
         if len(spaces) < len(candidates):
@@ -490,6 +490,7 @@ class Scheduler:
         print(f"Constraints have been generated in {end - start} seconds")
 
         valid = False
+        batch_size = 1 # default
         while not valid:
             try:
                 batch_size = int(input("Please enter desired batch size"))
