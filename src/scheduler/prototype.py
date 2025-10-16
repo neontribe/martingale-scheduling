@@ -42,71 +42,6 @@ def get_int(prompt: str, input_fn=input, logger=print) -> int:
             logger("Batch size must be an integer, with no additional characters")
 
 
-def plan_batches(self, candidates, cand_copy, spaces, batch_size):
-    """Split candidates and spaces into groups."""
-    cand_groups, cand_r = self.split_into_groups(candidates, batch_size)
-    copy_groups, copy_r = self.split_into_groups(cand_copy, batch_size)
-    no_batches = len(cand_groups) + 1
-    space_size = len(spaces) // no_batches
-    space_groups, space_r = self.split_into_groups(spaces, space_size)
-    assert no_batches == len(space_groups)
-    return cand_groups, copy_groups, cand_r, copy_r, space_groups, space_r, no_batches, space_size
-
-
-def add_assignment_constraints(model, x, cand_list, space_list):
-    """Each candidate to one space, each space to at most one candidate."""
-    for c in cand_list:
-        model.AddExactlyOne(x[c, s] for s in space_list)
-    for s in space_list:
-        model.AddAtMostOne(x[c, s] for c in cand_list)
-
-
-def set_min_cost_objective(model, cost, x, penalties, cand_list, space_list):
-    """Standard objective function setup."""
-    model.Minimize(
-        sum(cost[c, s] * x[c, s] for c in cand_list for s in space_list) + sum(weight * p for (p, weight) in penalties))
-
-
-def solve_model(model, verbose=True):
-    """Standardized solver creation and run."""
-    solver = cp_model.CpSolver()
-    if verbose:
-        solver.parameters.log_search_progress = True
-        solver.log_callback = print
-    status = solver.Solve(model)
-    feasible = status in (cp_model.OPTIMAL, cp_model.FEASIBLE)
-    return solver, feasible
-
-
-def run_round(i, model, x, cost, penalties, cand_group, copy_group, space_group, logger=print):
-    """Handles one optimization round."""
-    with timed(f"Round {i} set up", logger):
-        all_cand = cand_group + copy_group
-        add_assignment_constraints(model, x, all_cand, space_group)
-        set_min_cost_objective(model, cost, x, penalties, all_cand, space_group)
-    logger(f"Now solving round {i}...")
-    solver, ok = solve_model(model, verbose=True)
-    logger(f"Round {i} {'solution found' if ok else 'no solution'}")
-    return solver, ok
-
-
-def run_final_round(model, x, cost, penalties, cand_list, space_list, logger=print):
-    """Handles the final optimization round."""
-    with timed("Final set up", logger):
-        add_assignment_constraints(model, x, cand_list, space_list)
-        set_min_cost_objective(model, cost, x, penalties, cand_list, space_list)
-    logger("Now solving final round...")
-    return solve_model(model, verbose=True)
-
-
-def write_calendars(base_path, candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg):
-    """Creates calendar output files."""
-    output_file_data, output_file_clean = resolve_paths(base_path, "./output/data_interviews.ics",
-        "./output/clean_interviews.ics")
-    create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg, output_file_data,
-        output_file_clean)
-
-
 class Scheduler:
     def __init__(self):
         self.model = cp_model.CpModel()
@@ -115,73 +50,6 @@ class Scheduler:
         self.cost = {}
         self.pen_dict = defaultdict(list)
         self.cost_msg = defaultdict(list)
-
-    def gen_matches(self, candidates, cand_copy, spaces, weights):
-        """Finds suitable matches between candidate objects and spaces by accessing the relevant attributes.
-        In order for each slot to have two interviewers, a copy of candidates list is created
-        and constraints imposed on that list separately"""
-
-        idx = 0
-        for c in candidates:
-            for s in spaces:
-                # for a given space, s, matched to candidate c
-                # must enforce that cand and cand_copy have to be matched to a space with the same date, time and location
-                # but different interviewer
-                copy_con = self.model.NewBoolVar("copy_con")
-                # ensures copy_con is true
-                self.model.Add(copy_con == 1)
-                disallowed = [t for t in spaces if not (
-                        (s.location == t.location) and (s.date == t.date) and (s.time == t.time) and (
-                        s.int_id != t.int_id))]
-
-                # if connection is disallowed, ensure x bool is false
-                self.model.AddBoolAnd([self.x[cand_copy[idx], t].Not() for t in disallowed]).OnlyEnforceIf(self.x[c, s])
-
-                # currently the weights are randomised
-                self.cost[(c, s)] = weights[(c.address, s.location)]
-                self.cost[(cand_copy[idx], s)] = weights[(cand_copy[idx].address, s.location)]
-
-                # do the courses and availabilities match?
-                if (c.subject in s.subjects) and (s.datestr in c.avail):
-                    c_special = set(c.specialisms)
-                    if ("Masters" in str(c.subject)) and (c_special.intersection(s.specialisms["MMath"]) == set()) and (
-                            str(c.specialisms) != "nan"):
-                        # if c assigned to s, then c duplicate must be assigned to something with the same specialism
-                        copy_special = set(cand_copy[idx].specialisms)
-                        for t in spaces:
-                            if (s != t) and (copy_special.intersection(t.specialisms["MMath"]) == set()):
-                                penalty = self.model.NewBoolVar(f"penalty1_{c}_{cand_copy[idx]}_{s}_{t}")
-                                # trigger penalty if both x[c1,s1] and x[c2,s2] are true
-                                self.model.Add(penalty >= self.x[c, s] + self.x[cand_copy[idx], t] - 1)
-                                self.penalties.append((penalty, 10000))
-                                self.pen_dict[(c, s)].append((cand_copy[idx], t, 10000,
-                                                              f"Masters specialism mismatch: c: {c.specialisms}, s1: {s.specialisms['MMath']}, s2: {t.specialisms['MMath']}"))
-                    if ("Phd" in str(c.subject)) and (c_special.intersection(s.specialisms["MPhd"]) == set()) and (
-                            str(c.specialisms) != "nan"):
-                        # if c assigned to s, then c duplicate must be assigned to something with the same specialism
-                        for t in spaces:
-                            if (s != t) and (copy_special.intersection(t.specialisms["MPhd"]) == set()):
-                                penalty = self.model.NewBoolVar(f"penalty2_{c}_{cand_copy[idx]}_{s}_{t}")
-                                # trigger penalty if both x[c1,s1] and x[c2,s2] are true
-                                self.model.Add(penalty >= self.x[c, s] + self.x[cand_copy[idx], t] - 1)
-                                self.penalties.append((penalty, 10000))
-                                self.pen_dict[(c, s)].append((cand_copy[idx], t, 10000,
-                                                              f"Phd specialism mismatch: c: {c.specialisms}, s1: {s.specialisms['MPhd']}, s2: {t.specialisms['MPhd']}"))
-                if s.datestr in c.avail:
-                    print(f"{c.name} is available on {s.datestr}")
-                if s.datestr not in c.avail:
-                    # if the availabilities don't match, want this to be unfavourable
-                    self.cost[(c, s)] += 10000
-                    self.cost[(cand_copy[idx], s)] += 10000
-                    self.cost_msg[(c, s)].append("Avail mismatch")
-                    self.cost_msg[(cand_copy[idx], s)].append("Avail mismatch")
-                if c.subject not in s.subjects:
-                    # if the subjects don't match, want this to be very unfavourable
-                    self.cost[(c, s)] += 1000000
-                    self.cost[(cand_copy[idx], s)] += 1000000
-                    self.cost_msg[(c, s)].append("Subject mismatch")
-                    self.cost_msg[(cand_copy[idx], s)].append("Subject mismatch")
-            idx += 1
 
     def gen_matches_alt(self, candidates, cand_copy, spaces, weights):
         # Precompute space lookups to avoid repeated iterations
@@ -307,59 +175,6 @@ class Scheduler:
 
         return weights
 
-    def date_constraints(self, candidates, spaces):
-        """Ensures impossible assignments of interviewees being double booked
-        or assigned to different locations of consecutive days"""
-        for c1 in candidates:
-            for c2 in candidates:
-                if (c1.cand_id == c2.cand_id) and (c1 != c2):
-                    for s1 in spaces:
-                        for s2 in spaces:
-                            # disallow: double-booked or same day different location
-                            if (s1 != s2) and ((s2.date == s1.date and s1.time == s2.time) or (
-                                    s2.date == s1.date and s2.location != s1.location)):
-                                penalty = self.model.NewBoolVar(f"penalty3_{c1}_{c2}_{s1}_{s2}")
-                                # trigger penalty if both x[c1,s1] and x[c2,s2] are true
-                                self.model.Add(penalty >= self.x[c1, s1] + self.x[c2, s2] - 1)
-                                self.penalties.append((penalty, 1000000))
-                                self.pen_dict[(c1, s1)].append((c2, s2, 1000000, "Double-booked or same day/diff loc"))
-                                self.pen_dict[(c2, s2)].append((c1, s1, 1000000, "Double-booked or same day/diff loc"))
-
-                            # undesirable: consecutive days, different locations
-                            elif (abs((s1.date - s2.date).days) == 1) and (s1.location != s2.location):
-                                penalty = self.model.NewBoolVar(f"penalty3b_{c1}_{c2}_{s1}_{s2}")
-                                # trigger penalty if both x[c1,s1] and x[c2,s2] are true
-                                self.model.Add(penalty >= self.x[c1, s1] + self.x[c2, s2] - 1)
-                                self.penalties.append((penalty, 10000))
-                                self.pen_dict[(c1, s1)].append((c2, s2, 10000, "Consec days, diff loc"))
-                                self.pen_dict[(c2, s2)].append((c1, s1, 10000, "Consec days, diff loc"))
-
-        for s1 in spaces:
-            for s2 in spaces:
-                if (s1.interviewer == s2.interviewer) and (s1 != s2):
-                    for c1 in candidates:
-                        for c2 in candidates:
-                            # disallow: double-booked or same day different location
-                            if c1 != c2:
-                                if (s2.date == s1.date and s2.time == s1.time) or (
-                                        s2.date == s1.date and s2.location != s1.location):
-                                    penalty = self.model.NewBoolVar(f"penalty4_{c1}_{c2}_{s1}_{s2}")
-                                    # trigger penalty if both x[c1,s1] and x[c2,s2] are true
-                                    self.model.Add(penalty >= self.x[c1, s1] + self.x[c2, s2] - 1)
-                                    self.penalties.append((penalty, 1000000))
-                                    self.pen_dict[(c1, s1)].append(
-                                        (c2, s2, 1000000, "Double-booked or same day/diff loc"))
-                                    self.pen_dict[(c2, s2)].append(
-                                        (c1, s1, 1000000, "Double-booked or same day/diff loc"))
-
-                                # undesirable: consecutive days, different locations
-                                elif abs((s1.date - s2.date).days) == 1 and s1.location != s2.location:
-                                    penalty = self.model.NewBoolVar(f"penalty4b_{c1}_{c2}_{s1}_{s2}")
-                                    # trigger penalty if both x[c1,s1] and x[c2,s2] are true
-                                    self.model.Add(penalty >= self.x[c1, s1] + self.x[c2, s2] - 1)
-                                    self.penalties.append((penalty, 10000))
-                                    self.pen_dict[(c1, s1)].append((c2, s2, 10000, "Consec days, diff loc"))
-                                    self.pen_dict[(c2, s2)].append((c1, s1, 10000, "Consec days, diff loc"))
 
     def date_constraints_alt(self, candidates, spaces):
         """Optimized version with precomputed lookups and reduced constraint creation."""
@@ -539,7 +354,7 @@ class Scheduler:
     @staticmethod
     def split_into_groups(lst, size):
         groups = [lst[i:i + size] for i in range(0, len(lst) - len(lst) % size, size)]
-        remainder = lst[len(groups) * 20:]
+        remainder = lst[len(groups) * size:]
         return groups, remainder
 
     def run(self, logger=print, input_fn=input):
@@ -549,7 +364,8 @@ class Scheduler:
 
         # ---- Data Extraction ----
         abs_cand_path, abs_ac_path, abs_loc_path = resolve_paths(base_path, "./data/scholarship_candidates.xlsx",
-            "./data/academic_assessors.xlsx", "./data/Locations.xlsx")
+                                                                 "./data/academic_assessors.xlsx",
+                                                                 "./data/Locations.xlsx")
 
         with timed("Data extraction"):
             candidate_df, academic_df, location_df = extract_data(abs_cand_path, abs_ac_path, abs_loc_path)
@@ -580,7 +396,7 @@ class Scheduler:
 
         batch_size = get_int("Please enter desired batch size", input_fn, logger)
 
-        cand_groups, copy_groups, cand_r, copy_r, space_groups, space_r, no_batches, space_size = plan_batches(self,
+        cand_groups, copy_groups, cand_r, copy_r, space_groups, space_r, no_batches, space_size = self.plan_batches(
             candidates, cand_copy, spaces, batch_size)
 
         logger(f"No batches {no_batches}, no of space groups {len(space_groups)}, "
@@ -590,19 +406,85 @@ class Scheduler:
         # ---- Round Processing ----
         round_status_list = []
         for i, (cg, kg, sg) in enumerate(zip(cand_groups, copy_groups, space_groups)):
-            _, ok = run_round(i, self.model, self.x, self.cost, self.penalties, cg, kg, sg, logger)
+            _, ok = self.run_round(i, self.model, self.x, self.cost, self.penalties, cg, kg, sg, logger)
             round_status_list.append(ok)
 
         # ---- Final Round ----
         all_cand_r = cand_r + copy_r
         last_spaces = space_r + space_groups[-1]
-        solver, ok = run_final_round(self.model, self.x, self.cost, self.penalties, all_cand_r, last_spaces, logger)
+        solver, ok = self.run_final_round(self.model, self.x, self.cost, self.penalties, all_cand_r, last_spaces,
+                                          logger)
         round_status_list.append(ok)
 
         logger("Final round solution found" if ok else "Final round solution not found")
 
         # ---- Calendar Output ----
         logger("Generating calendar...")
-        write_calendars(base_path, candidates, cand_copy, spaces, solver, self.x, self.cost, self.pen_dict,
-                        self.cost_msg)
+        self.write_calendars(base_path, candidates, cand_copy, spaces, solver, self.x, self.cost, self.pen_dict,
+                             self.cost_msg)
         time.sleep(10)
+
+    @staticmethod
+    def plan_batches(candidates, cand_copy, spaces, batch_size):
+        """Split candidates and spaces into groups."""
+        cand_groups, cand_r = Scheduler.split_into_groups(candidates, batch_size)
+        copy_groups, copy_r = Scheduler.split_into_groups(cand_copy, batch_size)
+        no_batches = len(cand_groups) + 1
+        space_size = len(spaces) // no_batches
+        space_groups, space_r = Scheduler.split_into_groups(spaces, space_size)
+        assert no_batches == len(space_groups)
+        return cand_groups, copy_groups, cand_r, copy_r, space_groups, space_r, no_batches, space_size
+
+    @staticmethod
+    def add_assignment_constraints(model, x, cand_list, space_list):
+        """Each candidate to one space, each space to at most one candidate."""
+        for c in cand_list:
+            model.AddExactlyOne(x[c, s] for s in space_list)
+        for s in space_list:
+            model.AddAtMostOne(x[c, s] for c in cand_list)
+
+    @staticmethod
+    def set_min_cost_objective(model, cost, x, penalties, cand_list, space_list):
+        """Standard objective function setup."""
+        model.Minimize(sum(cost[c, s] * x[c, s] for c in cand_list for s in space_list) + sum(
+            weight * p for (p, weight) in penalties))
+
+    @staticmethod
+    def solve_model(model, verbose=True):
+        """Standardized solver creation and run."""
+        solver = cp_model.CpSolver()
+        if verbose:
+            solver.parameters.log_search_progress = True
+            solver.log_callback = print
+        status = solver.Solve(model)
+        feasible = status in (cp_model.OPTIMAL, cp_model.FEASIBLE)
+        return solver, feasible
+
+    @staticmethod
+    def run_round(i, model, x, cost, penalties, cand_group, copy_group, space_group, logger=print):
+        """Handles one optimization round."""
+        with timed(f"Round {i} set up", logger):
+            all_cand = cand_group + copy_group
+            Scheduler.add_assignment_constraints(model, x, all_cand, space_group)
+            Scheduler.set_min_cost_objective(model, cost, x, penalties, all_cand, space_group)
+        logger(f"Now solving round {i}...")
+        solver, ok = Scheduler.solve_model(model, verbose=True)
+        logger(f"Round {i} {'solution found' if ok else 'no solution'}")
+        return solver, ok
+
+    @staticmethod
+    def run_final_round(model, x, cost, penalties, cand_list, space_list, logger=print):
+        """Handles the final optimization round."""
+        with timed("Final set up", logger):
+            Scheduler.add_assignment_constraints(model, x, cand_list, space_list)
+            Scheduler.set_min_cost_objective(model, cost, x, penalties, cand_list, space_list)
+        logger("Now solving final round...")
+        return Scheduler.solve_model(model, verbose=True)
+
+    @staticmethod
+    def write_calendars(base_path, candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg):
+        """Creates calendar output files."""
+        output_file_data, output_file_clean = resolve_paths(base_path, "./output/data_interviews.ics",
+                                                            "./output/clean_interviews.ics")
+        create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg, output_file_data,
+                        output_file_clean)
