@@ -1,0 +1,15 @@
+# ===========================================
+# Martingale Scheduling - Default Configuration
+# ===========================================
+# This file provides the base configuration values
+# used when no custom config file is supplied.
+# It will be bundled with the PyInstaller build and
+# automatically located via `resource_path("scheduler.toml")`.
+
+# --- General settings ---
+[general]
+# Default location of input data
+data_dir = "data/"
+# Where to write generated calendars and reports
+output_dir = "output/"
+# Maximum time (seconds) to spend solving before stopping

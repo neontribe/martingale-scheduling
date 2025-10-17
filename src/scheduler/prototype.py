@@ -10,7 +10,6 @@ from ortools.sat.python import cp_model
 from .libs.classes import Space, SubjCandidate
 from .libs.utilities import extract_data, create_calendar
 
-
 @contextmanager
 def timed(label: str, logger=print):
     """Context manager to time and log code blocks."""
@@ -43,7 +42,9 @@ def get_int(prompt: str, input_fn=input, logger=print) -> int:
 
 
 class Scheduler:
-    def __init__(self):
+    def __init__(self, cfg):
+        self.data_dir = cfg["general"]["data_dir"]
+        self.output_dir = cfg["general"]["output_dir"]
         self.model = cp_model.CpModel()
         self.x = {}
         self.penalties = []
@@ -363,9 +364,9 @@ class Scheduler:
         base_path = resolve_base_path()
 
         # ---- Data Extraction ----
-        abs_cand_path, abs_ac_path, abs_loc_path = resolve_paths(base_path, "./data/scholarship_candidates.xlsx",
-                                                                 "./data/academic_assessors.xlsx",
-                                                                 "./data/Locations.xlsx")
+        abs_cand_path, abs_ac_path, abs_loc_path = resolve_paths(base_path, f"./{self.data_dir}/scholarship_candidates.xlsx",
+                                                                 f"./{self.data_dir}/academic_assessors.xlsx",
+                                                                 f"./{self.data_dir}/locations.xlsx")
 
         with timed("Data extraction"):
             candidate_df, academic_df, location_df = extract_data(abs_cand_path, abs_ac_path, abs_loc_path)
@@ -394,7 +395,7 @@ class Scheduler:
         with timed("Generating constraints"):
             self.date_constraints_alt(candidates, spaces)
 
-        batch_size = get_int("Please enter desired batch size", input_fn, logger)
+        batch_size = get_int("Please enter desired batch size: ", input_fn, logger)
 
         cand_groups, copy_groups, cand_r, copy_r, space_groups, space_r, no_batches, space_size = self.plan_batches(
             candidates, cand_copy, spaces, batch_size)
@@ -420,7 +421,7 @@ class Scheduler:
 
         # ---- Calendar Output ----
         logger("Generating calendar...")
-        self.write_calendars(base_path, candidates, cand_copy, spaces, solver, self.x, self.cost, self.pen_dict,
+        self.write_calendars(base_path, self.output_dir, candidates, cand_copy, spaces, solver, self.x, self.cost, self.pen_dict,
                              self.cost_msg)
         time.sleep(10)
 
@@ -482,9 +483,9 @@ class Scheduler:
         return Scheduler.solve_model(model, verbose=True)
 
     @staticmethod
-    def write_calendars(base_path, candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg):
+    def write_calendars(base_path, output_dir, candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg):
         """Creates calendar output files."""
-        output_file_data, output_file_clean = resolve_paths(base_path, "./output/data_interviews.ics",
-                                                            "./output/clean_interviews.ics")
+        output_file_data, output_file_clean = resolve_paths(base_path, f"./{output_dir}/data_interviews.ics",
+                                                            f"./{output_dir}/clean_interviews.ics")
         create_calendar(candidates, cand_copy, spaces, solver, x, cost, pen_dict, cost_msg, output_file_data,
                         output_file_clean)
