@@ -1,5 +1,4 @@
 from __future__ import annotations
-import sys
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -7,22 +6,15 @@ import typer
 
 import tomllib
 
+from scheduler.paths import resource_path, ensure_dir, runtime_path
 from .core import do_task
+
 
 app = typer.Typer(add_completion=False, help="Martingale Scheduler CLI")
 
 # -------------------------
 # Helpers
 # -------------------------
-def resource_path(rel: str) -> Path:
-    """
-    Resolve a path that works both in development and when frozen by PyInstaller.
-    """
-    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-        base = Path(sys._MEIPASS)  # type: ignore[attr-defined]
-    else:
-        base = Path(__file__).resolve().parent
-    return (base / rel).resolve()
 
 def deep_merge(base: dict, overrides: dict) -> dict:
     out = dict(base)
@@ -75,7 +67,6 @@ def load_config(config_path: Optional[Path]) -> dict:
     if config_path is None:
         config_path = resource_path("scheduler.toml")
 
-    print(config_path)
     with open(config_path, "rb") as f:
         return tomllib.load(f)
 
@@ -111,10 +102,16 @@ def main(
 
 @app.command()
 def run(ctx: typer.Context):
+    cfg: dict = ctx.obj
+    data_dir = cfg["general"]["data_dir"]
+    output_dir = cfg["general"]["output_dir"]
+    ensure_dir(runtime_path(data_dir))
+    ensure_dir(runtime_path(output_dir))
+
     """
     Run the main task.
     """
-    cfg: dict = ctx.obj
+    print(f"Running from {data_dir} outputting to {output_dir}")
     do_task(cfg)
 
 # Optional explicit entrypoint for `python -m scheduler.cli`
