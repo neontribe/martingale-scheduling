@@ -24,6 +24,10 @@ def runtime_path(*rel: str | Path) -> Path:
     """
     return (Path.cwd().joinpath(*map(Path, rel))).resolve()
 
+def resolve_paths(base: Path, *rels: str) -> list[Path]:
+    """Resolve multiple relative paths against a base directory."""
+    return [(base / Path(r)).resolve() for r in rels]
+
 def ensure_dir(p: str | Path) -> Path:
     """Create a directory if missing and return it."""
     p = Path(p)

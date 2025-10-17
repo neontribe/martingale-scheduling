@@ -1,14 +1,13 @@
 import copy
-import sys
 import time
 from collections import defaultdict
 from contextlib import contextmanager
-from pathlib import Path
 
 from ortools.sat.python import cp_model
 
 from .libs.classes import Space, SubjCandidate
 from .libs.utilities import extract_data, create_calendar
+from .paths import runtime_path, resolve_paths
 
 @contextmanager
 def timed(label: str, logger=print):
@@ -18,18 +17,6 @@ def timed(label: str, logger=print):
         yield
     finally:
         logger(f"{label} in {time.time() - t0:.2f} seconds")
-
-
-def resolve_base_path() -> Path:
-    """Handle PyInstaller frozen vs normal script path."""
-    if getattr(sys, "frozen", False):
-        return Path(sys._MEIPASS).parents[4]
-    return Path(__file__).parents[2]
-
-
-def resolve_paths(base: Path, *rels: str) -> list[Path]:
-    """Resolve multiple relative paths against a base directory."""
-    return [(base / Path(r)).resolve() for r in rels]
 
 
 def get_int(prompt: str, input_fn=input, logger=print) -> int:
@@ -361,7 +348,7 @@ class Scheduler:
     def run(self, logger=print, input_fn=input):
         logger("Please be patient, this may take a few minutes")
 
-        base_path = resolve_base_path()
+        base_path = runtime_path()
 
         # ---- Data Extraction ----
         abs_cand_path, abs_ac_path, abs_loc_path = resolve_paths(base_path, f"./{self.data_dir}/scholarship_candidates.xlsx",
