@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from .utilities import parse_schedule
+from scheduler.libs.utilities import parse_schedule
 
 
 class Space:

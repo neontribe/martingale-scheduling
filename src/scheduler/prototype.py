@@ -5,9 +5,9 @@ from contextlib import contextmanager
 
 from ortools.sat.python import cp_model
 
-from .libs.classes import Space, SubjCandidate
-from .libs.utilities import extract_data, create_calendar
-from .paths import runtime_path, resolve_paths
+from scheduler.libs.classes import Space, SubjCandidate
+from scheduler.libs.utilities import extract_data, create_calendar
+from scheduler.paths import runtime_path, resolve_paths
 
 @contextmanager
 def timed(label: str, logger=print):

@@ -7,7 +7,7 @@ import typer
 import tomllib
 
 from scheduler.paths import resource_path, ensure_dir, runtime_path
-from .core import do_task
+from scheduler.core import do_task
 
 
 app = typer.Typer(add_completion=False, help="Martingale Scheduler CLI")
